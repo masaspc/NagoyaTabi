@@ -184,7 +184,7 @@
           { time:'09:40', title:'徳川美術館', spotId:'tokugawa', kind:'plain',
             note:'10:00開館。大曽根駅から徒歩15分か名鉄瀬戸線 森下駅から徒歩10分。' +
                  '夏季特別展「武芸 サムライ・アスリート」開催中。屋内なので猛暑日の逃げ場',
-            stay:85, minStay:50,
+            stay:85, minStay:50, hardDeadline:'16:30', deadlineWhy:'入館締切',
             alts:{
               crowd:{ title:'ノリタケの森', spotId:'noritake',
                 note:'名古屋駅から徒歩15分。移動が短いぶん昼に余裕が出る' }
