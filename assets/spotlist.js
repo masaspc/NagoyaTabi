@@ -2,6 +2,15 @@
   var NT = w.NT;
   var state = { area: 'すべて', sort: 'area', origin: null, geoError: null };
 
+  /* 開いているカードの id 集合。再描画（フィルタ・ソート・訪問済み）をまたいで
+     開閉状態を保つための唯一の情報源。着地ハッシュがあれば最初に一度だけ種入れする。
+     以後はユーザーの開閉操作（toggle イベント）だけが更新する。 */
+  var openIds = {};
+  (function seedFromHash() {
+    var h = (location.hash || '').replace(/^#spot-/, '');
+    if (h) openIds[h] = true;
+  })();
+
   NT.distanceKm = function (a, b) {
     var R = 6371, r = Math.PI / 180;
     var dLat = (b.lat - a.lat) * r, dLng = (b.lng - a.lng) * r;
@@ -16,16 +25,47 @@
     NT.set('visited', v);
   };
 
-  function card(s) {
-    var visited = !!NT.get('visited', {})[s.id];
-    var dist = state.origin ? NT.distanceKm(state.origin, s) : null;
-    var head = NT.el('h3', {}, [
-      s.name,
+  function badges(s) {
+    return [
       s.indoor ? NT.el('span', { class: 'badge indoor', text: '屋内' }) : null,
       !s.indoor && s.shade ? NT.el('span', { class: 'badge shade', text: '日陰' }) : null,
       s.unverified ? NT.el('span', { class: 'badge warn', text: '要確認' }) : null
+    ];
+  }
+
+  function card(s) {
+    var visited = !!NT.get('visited', {})[s.id];
+    var dist = state.origin ? NT.distanceKm(state.origin, s) : null;
+    var isOpen = !!openIds[s.id];
+
+    /* --- 折りたたみ時（summary）: カードを開かずに選べる材料だけを載せる ---
+       名称・バッジ・エリア・道案内1行（駅と徒歩時間）・距離順のときは距離・訪問済トグル */
+    var visBtn = NT.el('button', {
+      class: 'btn vis' + (visited ? ' on' : ''), type: 'button',
+      text: visited ? '訪問済 ✓' : '訪問済にする',
+      onclick: function (e) {
+        /* summary の開閉トグルへ伝播させない。閉じたままチェックを付けられるようにする */
+        e.preventDefault();
+        e.stopPropagation();
+        NT.toggleVisited(s.id);
+        NT.renderSpots();
+      }
+    });
+    var head = NT.el('div', { class: 'spot-head' }, [
+      NT.el('span', { class: 'chev', 'aria-hidden': 'true' }),
+      NT.el('h3', {}, [s.name].concat(badges(s))),
+      visBtn
     ]);
+    var sumMeta = NT.el('div', { class: 'spot-summeta mono' }, [].concat(
+      NT.el('span', { class: 'sm-area', text: s.area }),
+      NT.el('span', { class: 'sm-orient', text: s.station + ' ' + s.walk }),
+      dist !== null ? NT.el('span', { class: 'sm-dist', text: dist.toFixed(1) + ' km' }) : null
+    ));
+    var summary = NT.el('summary', {}, [head, sumMeta]);
+
+    /* --- 展開時（body）: それ以外の全部 --- */
     var meta = NT.el('dl', { class: 'spot-meta' }, [].concat(
+      row('分類', s.category),
       row('場所', s.station + ' ' + s.walk),
       row('営業', s.hours),
       s.closed ? row('定休', s.closed) : [],
@@ -49,19 +89,20 @@
         s.tel ? NT.el('a', { href: 'tel:' + s.tel, text: s.tel }) : null
       ])
     ]);
-    var art = NT.el('article', { class: 'card spot' + (visited ? ' visited' : ''), id: 'spot-' + s.id }, [
-      NT.el('div', { class: 'spot-head' }, [
-        head,
-        NT.el('button', {
-          class: 'btn vis' + (visited ? ' on' : ''), type: 'button',
-          text: visited ? '訪問済 ✓' : '訪問済にする',
-          onclick: function () { NT.toggleVisited(s.id); NT.renderSpots(); }
-        })
-      ]),
-      NT.el('div', { class: 'spot-area mono', text: s.area + ' / ' + s.category }),
-      body
-    ]);
-    return art;
+
+    var det = NT.el('details', {
+      class: 'card spot' + (visited ? ' visited' : ''),
+      id: 'spot-' + s.id,
+      open: isOpen
+    }, [summary, NT.el('div', { class: 'spot-body-wrap' }, [body])]);
+
+    /* 開閉状態を openIds に記録する。再描画（フィルタ・ソート・訪問済み）をまたいで
+       ユーザーが開いたカードを勝手に閉じない・閉じたカードを勝手に開かないため */
+    det.addEventListener('toggle', function () {
+      if (det.open) openIds[s.id] = true; else delete openIds[s.id];
+    });
+
+    return det;
 
     function row(k, v) {
       return [NT.el('dt', { text: k }), NT.el('dd', { text: v })];
