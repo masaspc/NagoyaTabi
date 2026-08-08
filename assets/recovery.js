@@ -12,7 +12,16 @@
   var NT = w.NT;
   var THRESHOLD = 15; /* これ以下の遅れは提案しない */
 
-  NT.markHere = function (key) { NT.set('progress', { key: key, at: NT.now().toISOString() }); };
+  /* NT.itemKey は "dayIndex-itemIndex" という純粋に位置的なキーで、プランをまたいで
+     一意ではない（プランAの 0-5 は大須商店街、プランBの 0-5 は熱田神宮）。記録した
+     プランと違うプランの下でそのキーを引くと、キーは「存在してしまう」ので not-found
+     経路が発火せず、無言で別の場所の遅れとして扱われてしまう。そこで記録した時点の
+     プラン id を一緒に保存し、参照時に一致するプランでしか使わない。一致しない記録は
+     「消す」のではなく「無視する」――別プランを覗いて戻ってきただけの人の記録を
+     silently に消すのは、それはそれで裏切りになる。 */
+  NT.markHere = function (key) {
+    NT.set('progress', { key: key, at: NT.now().toISOString(), plan: NT.currentPlan().id });
+  };
   NT.clearHere = function () { localStorage.removeItem('nt:progress'); };
 
   function slotByKey(plan, key) {
@@ -21,9 +30,17 @@
     return null;
   }
 
-  NT.delayMinutes = function (plan) {
+  /* 与えられた plan に属する記録だけを返す。プランが違う記録は「無い」ものとして
+     扱う（消しはしない ―― nt:progress 自体はそのまま残る）。 */
+  function progressFor(plan) {
     var pr = NT.get('progress', null);
-    if (pr && pr.key && pr.at) {
+    if (pr && pr.key && pr.at && pr.plan === plan.id) return pr;
+    return null;
+  }
+
+  NT.delayMinutes = function (plan) {
+    var pr = progressFor(plan);
+    if (pr) {
       var s = slotByKey(plan, pr.key);
       if (s) {
         var d = Math.round((new Date(pr.at) - s.start) / 60000);
@@ -115,10 +132,11 @@
     return NT.el('div', { class: 'rec', id: 'recovery' }, kids);
   }
 
-  /* 各コマに「今ここ」ボタンを足す */
+  /* 各コマに「今ここ」ボタンを足す。✓ 状態も progressFor 経由にする ―― でないと
+     別プランで付けた記録の key がたまたま一致した項目に ✓ が化けて出てしまう。 */
   NT.itemDecorators.push(function (li, item, ctx) {
     if (item.kind === 'move') return;
-    var pr = NT.get('progress', null);
+    var pr = progressFor(ctx.plan);
     var on = pr && pr.key === ctx.key;
     NT.$('.tl-body', li).appendChild(NT.el('button', {
       class: 'btn here' + (on ? ' on' : ''), type: 'button',
