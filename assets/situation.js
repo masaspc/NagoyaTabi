@@ -49,7 +49,7 @@
     if (!alt) return;
     li.classList.add('has-alt');
     var body = NT.$('.tl-body', li);
-    var orig = NT.$('strong', body).textContent;
+    var orig = item.title;
     body.textContent = '';
     body.appendChild(NT.el('strong', {}, [
       alt.title, NT.el('span', { class: 'alt-tag', text: NT.SITUATIONS.filter(function (s) {
