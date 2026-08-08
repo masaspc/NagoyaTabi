@@ -334,3 +334,92 @@ section.tight{padding-top:0}
    反転を扱えないことがあるため、テーマの色変数を使わず #fff/#000 で描く */
 .qr-card canvas{display:block;margin:11px auto 0;border:1px solid var(--rule);background:#fff}
 .qr-url{font-size:11px;color:var(--gray);word-break:break-all;text-align:center;margin:9px 0 0}
+
+/* 印刷レイアウト（Task 18）: 電池切れの保険。行程と営業時間表を紙に落とす。
+   操作するものは紙の上では押せないため全て消す。 */
+@media print{
+  /* 紙では操作できないものを消す */
+  header[data-nav], .theme-toggle, .btnrow, .plan-switch-row, .sit,
+  .now-jump, .clock-bar, .btn, .rec-box, .om-row .btn, .gacha, .qr-card,
+  .sum-card, .map-det, .rec .btn, .btn.here, .btn.vis{ display:none !important; }
+
+  /* 土産の個数・宛先入力も操作物なので消す（.om-row .btn だけでは
+     input 2つ（.om-qty/.om-who）が残ってしまうため、明示的に加える） */
+  .om-qty, .om-who{ display:none !important; }
+
+  /* 紙は白地。色は最小限に落とす。
+     カスタムプロパティに !important を付ける: :root:not([data-theme="light"])
+     （夜モード自動判定）と :root[data-theme="dark"]（夜モード固定）は、
+     どちらも :root 単体より詳細度が高い（:not()/[data-theme] の分だけ
+     クラス相当のセレクタが1つ多い）。!important なしだと印刷側のこの :root が
+     負けて、夜モードの色のまま印刷されてしまう（実機描画で確認済みの不具合）。 */
+  :root{ --bg:#fff !important; --card:#fff !important; --fg:#000 !important;
+         --gray:#555 !important; --rule:#bbb !important; --head-bg:#fff !important;
+         --head-fg:#000 !important; --head-sub:#555 !important; --shadow:none !important;
+         /* 表の1列目（tbody th、店名など）だけは --card ではなく --paper-hi を
+            直接参照している。--card だけ白くしても --paper-hi が夜モードの
+            暗い値のまま残ると、その列だけ黒地に見える（実機描画で確認した不具合）。 */
+         --paper-hi:#fff !important; }
+  body{ font-size:10.5pt; line-height:1.55; background:#fff; color:#000; }
+  .wrap{ max-width:none; padding:0; }
+  /* section・day は break-inside:avoid にしない。行程の「02 行程」節は
+     DAY1・DAY2 の2箱をまるごと1つの <section> に収めており（itinerary.js）、
+     DAY1だけで8コマある。section や day 単位で break-inside:avoid を掛けると、
+     1ページに収まりきらない箱を丸ごと次ページへ送ろうとして手前のページに
+     大きな空白ができ、かえってページ数が増える（実機PDF生成で確認した）。
+     割ってはいけない最小単位は1コマ（.tl-item）なので、そちらだけ避ける。 */
+  section{ padding:6pt 0; }
+  .card{ break-inside:avoid; box-shadow:none; border:1px solid #bbb; }
+  .day{ box-shadow:none; border:1px solid #bbb; }
+  .page-head{ padding:0 0 5pt; border-bottom:2pt solid #000; }
+  .page-head h1{ font-size:15pt; color:#000; }
+  .page-head .sub{ display:block; margin-top:3pt; }
+  .page-head .eyebrow, .page-head .sub{ color:#333; }
+  .daybar{ background:#eee !important; color:#000 !important; border-bottom:1px solid #bbb; }
+  thead th{ background:#eee !important; color:#000 !important; }
+  footer{ background:none; color:#333; border-top:1px solid #bbb; }
+
+  /* index.html は行程2日分をA4 2ページ以内に収める要件があるため、
+     カードの余白を画面表示より詰める（情報量はそのまま、行間・余白だけ削る）。 */
+  .sec-head{ margin-bottom:6pt; padding-bottom:4pt; }
+  .card{ margin-bottom:6pt; }
+  .day{ margin-bottom:8pt; }
+
+  /* 画面では横スクロールする箱を、紙では全部出す */
+  .table-scroll{ overflow:visible; border:none; }
+  table{ min-width:0; font-size:9pt; }
+  th,td{ padding:4pt 6pt; }
+
+  /* <details> は既定で閉じているカード・節がある（名所・名物・土産カードは
+     すべて既定で閉じ、実用メモの節も 01 以外は既定で閉じている）。
+     画面ではタップで開くが、紙の上では開閉操作ができないため、
+     開閉状態にかかわらず本文（*-body-wrap）を強制的に表示する。
+     これをしないと、営業時間表（01は既定で開くので影響しないが）や
+     移動早見表（02、既定で閉じている）・名所名物カードの本文が
+     印刷から丸ごと消えてしまう。
+
+     加えて、新しいChrome（details/summaryのアニメーション対応、M131+）は
+     閉じた <details> の中身を ::details-content という内部の疑似要素に収め、
+     content-visibility:hidden と block-size:0 で畳む。.spot-body-wrap 側を
+     display:block にしても、その外側の ::details-content がゼロ高さのままだと
+     結局何も印刷されない（実機描画で確認した不具合）。疑似要素側も
+     明示的に開いた状態相当へ戻す必要がある。 */
+  .spot-body-wrap, .tips-body-wrap{ display:block !important; }
+  details::details-content{
+    content-visibility:visible !important; block-size:auto !important; overflow:visible !important;
+  }
+
+  /* 行程は詰める */
+  .tl{ padding:6pt 8pt; }
+  .tl-item{ padding-bottom:4pt; break-inside:avoid; }
+  .tl-note{ font-size:9pt; }
+  .now-bar{ border:1px solid #000; background:#fff !important; color:#000 !important;
+            margin:6pt 0 2pt; padding:6pt 8pt; }
+  .now-title{ color:#000; }
+  .rec{ border:1px solid #000; margin:4pt 0 2pt; padding:6pt 8pt; }
+
+  /* リンクの下線は残すがURLは展開しない。行程の可読性を優先する */
+  a{ color:#000; text-decoration:underline; }
+
+  @page{ size:A4; margin:12mm; }
+}
