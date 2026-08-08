@@ -44,15 +44,18 @@
      名称・五食バッジ・カテゴリ・価格帯。詳細（何が名古屋なのか・食べ方・店・豆知識）は開いたときだけ */
   function card(f) {
     var isOpen = !!openIds[f.id];
+    /* 食べたトグル（record.js が差し込む）の置き場を空けるため、価格は
+       summary の2行目（summeta）へ回す。1行目は chevron + 名前 + トグルだけにして、
+       折りたたみ時に押しやすい列を保つ */
     var summary = NT.el('summary', {}, [
       NT.el('div', { class: 'spot-head' }, [
         NT.el('span', { class: 'chev', 'aria-hidden': 'true' }),
         NT.el('h3', {}, [f.name,
-          f.slot ? NT.el('span', { class: 'badge kin', text: '五食' }) : null]),
-        NT.el('span', { class: 'food-price mono', text: f.price })
+          f.slot ? NT.el('span', { class: 'badge kin', text: '五食' }) : null])
       ]),
       NT.el('div', { class: 'spot-summeta mono' }, [
-        NT.el('span', { class: 'sm-cat', text: f.cat })
+        NT.el('span', { class: 'sm-cat', text: f.cat }),
+        NT.el('span', { class: 'food-price', text: f.price })
       ])
     ]);
 
