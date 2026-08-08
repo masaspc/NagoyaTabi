@@ -126,7 +126,19 @@
     { no: '01', title: '営業時間・定休日', build: hoursTable },
     { no: '02', title: '移動の早見表',     build: transitTable },
     { no: '03', title: '暑さ対策と持ち物', build: heatSection },
-    { no: '05', title: '地下鉄マップ',     build: function () { return NT.buildSubwayMap({}); } }
+    { no: '05', title: '地下鉄マップ',     build: function () { return NT.buildSubwayMap({}); } },
+    { no: '06', title: '同行者に渡す', build: function () {
+      var url = location.href.replace(/[^/]*$/, '').replace(/\/$/, '') + '/index.html';
+      var cv = NT.qrCanvas ? NT.qrCanvas(url, 6) : null;
+      return NT.el('div', { class: 'card qr-card' }, [
+        NT.el('h3', { text: 'このサイトのQRコード' }),
+        cv || NT.el('p', { class: 'notice warn',
+          text: 'URLが長すぎてQRにできませんでした。下のアドレスを直接渡してください。' }),
+        NT.el('p', { class: 'qr-url mono', text: url }),
+        NT.el('p', { class: 'notice',
+          text: 'ホーム画面に追加しておくと、地下街で電波が弱くても開けます。' })
+      ]);
+    } }
   );
 
   /* 節ごとの開閉状態。spotlist.js の openIds と同じ方式（モジュール変数を

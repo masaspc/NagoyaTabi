@@ -329,3 +329,8 @@ section.tight{padding-top:0}
 .gacha-bar{height:5px;background:var(--rule);border-radius:3px;overflow:hidden;margin-top:4px}
 .gacha-fill{height:100%;background:var(--kin);transition:width .3s ease}
 @media (prefers-reduced-motion:reduce){.gacha-fill{transition:none}}
+
+/* QRコード（Task 15）: 夜モードでも白地に黒のまま固定する。読み取り機が
+   反転を扱えないことがあるため、テーマの色変数を使わず #fff/#000 で描く */
+.qr-card canvas{display:block;margin:11px auto 0;border:1px solid var(--rule);background:#fff}
+.qr-url{font-size:11px;color:var(--gray);word-break:break-all;text-align:center;margin:9px 0 0}
