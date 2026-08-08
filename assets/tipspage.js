@@ -10,14 +10,28 @@
      unverified な箇所は文字列がどうであれ断定せず常に「要確認」を返す。
      定休日の記述に祝日の振替に触れるもの（「祝日は営業」「祝日の場合は…」）が
      あり、かつ判定日がその定休曜日に当たる場合も、文字列だけでは
-     振替後の休業日を特定できないため「要確認」に倒す。 */
+     振替後の休業日を特定できないため「要確認」に倒す。
+
+     曜日の判定は「◯曜」という並びだけを手がかりにする。dow の1文字だけを
+     indexOf で探すと、「定休日」「開催日」「休館日」のような地の文にまで
+     誤反応する（「日」が代表例）。また「第2第4木曜」のように週番号が付く
+     表記は、文字列だけでは何週目かを解決できないため、○/×で断定せず
+     「要確認」に倒す。判断できないときは閉まっている方向に倒さない。 */
   NT.openOn = function (spot, dateISO, isHoliday) {
     if (spot.unverified) return '要確認';
     var closed = spot.closed || '';
     if (!closed) return '○';
     var dow = ['日', '月', '火', '水', '木', '金', '土'][NT.parseHM('00:00', dateISO).getDay()];
-    if (closed.indexOf(dow) < 0) return '○';
+
+    var re = /((?:第[0-9一二三四五六七八九十]+)+|最終)?([月火水木金土日])曜/g;
+    var plainMatch = false, qualifiedMatch = false, m;
+    while ((m = re.exec(closed))) {
+      if (m[2] !== dow) continue;
+      if (m[1]) qualifiedMatch = true; else plainMatch = true;
+    }
+    if (!plainMatch && !qualifiedMatch) return '○';
     if (isHoliday && /祝日は営業|祝日の場合/.test(closed)) return '要確認';
+    if (qualifiedMatch && !plainMatch) return '要確認';
     return '×';
   };
 
