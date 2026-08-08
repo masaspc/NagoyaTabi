@@ -300,3 +300,22 @@ section.tight{padding-top:0}
 .submap-legend i{width:14px;height:4px;border-radius:2px;display:inline-block}
 .map-det summary{cursor:pointer;font-size:13.5px;padding:11px 0;color:var(--accent);font-weight:500;
   min-height:44px;display:flex;align-items:center}
+
+/* 実用メモページの節 = <details>（Task 13）。ページが伸び続けるのを止めるため、
+   spot/food/om カードと同じ折りたたみパターンを節単位に適用する。
+   既定で開くのは 01（営業時間・定休日）だけ。開閉状態は tipspage.js の
+   openIds が再描画をまたいで保持する */
+.tips-det{padding:0;margin-bottom:12px}
+.tips-det>summary{cursor:pointer;padding:14px 17px;list-style:none;display:flex;
+  align-items:baseline;gap:9px;min-height:44px;-webkit-tap-highlight-color:transparent}
+.tips-det>summary::-webkit-details-marker{display:none}
+.tips-det>summary::marker{content:''}
+.tips-det .chev{flex:none;font-size:11px;line-height:1.55;color:var(--accent);
+  transition:transform .15s ease}
+.tips-det .chev::before{content:'▸'}
+.tips-det[open] .chev{transform:rotate(90deg)}
+.tips-det summary .no{font-family:"Space Mono",ui-monospace,monospace;font-size:10.5px;
+  letter-spacing:.2em;color:var(--gray);flex:none}
+.tips-det summary h2{font-size:16.5px}
+.tips-body-wrap{padding:0 17px 18px;border-top:1px solid var(--rule)}
+.tips-body-wrap>*:first-child{margin-top:15px}

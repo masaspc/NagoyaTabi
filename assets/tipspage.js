@@ -129,18 +129,44 @@
     { no: '05', title: '地下鉄マップ',     build: function () { return NT.buildSubwayMap({}); } }
   );
 
-  /* #tips-root を描き直す。再入可能（再描画してもテーブルが重複しない） */
+  /* 節ごとの開閉状態。spotlist.js の openIds と同じ方式（モジュール変数を
+     唯一の情報源にして、再描画をまたいでユーザーの開閉操作を保つ）。
+     このページは事業時間表を「11時半に栄で開く」使い方が主なので、既定で
+     開いているのは 01（営業時間・定休日）だけにする。他の節は目的があって
+     わざわざ開きに行く参考情報として畳んでおく。 */
+  var openIds = { '01': true };
+
+  /* #tips-root を描き直す。再入可能（再描画しても節が重複しない）。
+     各節は <details> にして、開いた節は再描画をまたいで開いたままにする
+     （土産リストで個数を変えるたびに NT.renderTips() が丸ごと呼ばれるため、
+     ここで状態を保たないと開いていた節が毎回閉じてしまう）。
+
+     no でソートしてから描く: 05（地下鉄マップ）は tipspage.js 内の push で
+     04（土産リスト、omiyage.js が tipspage.js の後に読み込まれて push する）
+     より前に配列へ積まれるため、push 順そのままだと表示順が 01,02,03,05,04 に
+     ずれる。読み込み順に依存させず番号順を保証するため、描画直前にソートする */
   NT.renderTips = function () {
     var root = NT.$('#tips-root');
     if (!root) return;
     root.textContent = '';
-    NT.tipsSections.forEach(function (s) {
-      root.appendChild(NT.el('section', {}, [
-        NT.el('div', { class: 'sec-head' }, [
-          NT.el('span', { class: 'no', text: s.no }), NT.el('h2', { text: s.title })
+    var ordered = NT.tipsSections.slice().sort(function (a, b) {
+      return a.no < b.no ? -1 : a.no > b.no ? 1 : 0;
+    });
+    ordered.forEach(function (s) {
+      var det = NT.el('details', {
+        class: 'card tips-det', id: 'tips-' + s.no, open: !!openIds[s.no]
+      }, [
+        NT.el('summary', {}, [
+          NT.el('span', { class: 'chev', 'aria-hidden': 'true' }),
+          NT.el('span', { class: 'no', text: s.no }),
+          NT.el('h2', { text: s.title })
         ]),
-        s.build()
-      ]));
+        NT.el('div', { class: 'tips-body-wrap' }, [s.build()])
+      ]);
+      det.addEventListener('toggle', function () {
+        if (det.open) openIds[s.no] = true; else delete openIds[s.no];
+      });
+      root.appendChild(det);
     });
   };
 })(window);
