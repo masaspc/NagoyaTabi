@@ -248,3 +248,19 @@
     }
   });
 })(window);
+
+/* 地下鉄マップ（Task 13）。折りたたみに入れて既定は閉じておく。
+   renderItinerary は #itinerary-root を毎回空にして描き直すので、この afterRender も
+   呼ばれるたびに新しい <details> を1つだけ足す形になり、重複しない */
+(function (w) {
+  var NT = w.NT;
+  NT.afterRender.push(function () {
+    if (!NT.buildSubwayMap) return;
+    var root = NT.$('#itinerary-root');
+    var det = NT.el('details', { class: 'map-det' }, [
+      NT.el('summary', { text: '地下鉄と行き先の位置関係' }),
+      NT.buildSubwayMap({})
+    ]);
+    root.appendChild(NT.el('section', { class: 'tight' }, [det]));
+  });
+})(window);

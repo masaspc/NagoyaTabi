@@ -125,7 +125,8 @@
   NT.tipsSections.push(
     { no: '01', title: '営業時間・定休日', build: hoursTable },
     { no: '02', title: '移動の早見表',     build: transitTable },
-    { no: '03', title: '暑さ対策と持ち物', build: heatSection }
+    { no: '03', title: '暑さ対策と持ち物', build: heatSection },
+    { no: '05', title: '地下鉄マップ',     build: function () { return NT.buildSubwayMap({}); } }
   );
 
   /* #tips-root を描き直す。再入可能（再描画してもテーブルが重複しない） */

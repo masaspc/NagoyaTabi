@@ -281,3 +281,22 @@ section.tight{padding-top:0}
 .mk-q{color:var(--kin);font-size:11.5px}
 .tel-line{display:block;font-size:11.5px;font-weight:400;margin-top:2px}
 .tel-line a{white-space:nowrap}
+
+/* 地下鉄マップ（Task 13）。.submap-wrap だけを overflow-x:auto にして、
+   幅375pxの端末でも地図だけが横スクロールしページ本体は動かないようにする。
+   色は路線のブランドカラーとしてリテラルの16進を使うが、駅名・背景・枠は
+   CSS変数（--fg/--bg/--card/--kin）を参照するので夜モードでも読める。 */
+.submap-wrap{background:var(--card);border:1px solid var(--rule);border-radius:3px;
+  padding:12px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.submap{width:100%;min-width:520px;height:auto;display:block}
+.submap .pin{cursor:pointer}
+/* ホバー・フォーカスで色を変えるのは見た目のピル（.pin-rect）だけ。
+   タップ領域を広げるための透明な当たり判定（.pin-hit）まで塗ってしまうと
+   ピンの周りに大きな塗り矩形が見えてしまうため、明示的に対象を分ける */
+.submap .pin:hover .pin-rect,.submap .pin:focus .pin-rect{fill:var(--kin);stroke:var(--kin)}
+.submap .pin:focus{outline:2px solid var(--accent);outline-offset:2px}
+.submap-legend{display:flex;flex-wrap:wrap;gap:12px;margin-top:9px;font-size:11.5px;color:var(--gray)}
+.submap-legend .lg{display:flex;align-items:center;gap:5px}
+.submap-legend i{width:14px;height:4px;border-radius:2px;display:inline-block}
+.map-det summary{cursor:pointer;font-size:13.5px;padding:11px 0;color:var(--accent);font-weight:500;
+  min-height:44px;display:flex;align-items:center}
