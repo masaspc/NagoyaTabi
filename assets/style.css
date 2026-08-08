@@ -119,6 +119,10 @@ footer{background:var(--head-bg);color:var(--head-sub);padding:24px 0;font-size:
 .tl-note{display:block;font-size:12.5px;color:var(--gray);margin-top:3px}
 .tl-deadline{display:block;font-size:11.5px;color:var(--miso);margin-top:4px}
 .tl-links{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:6px;font-size:12px}
+/* 詳細・地図・電話番号は「文中の参照リンク」ではなく、カード末尾に並ぶ独立した
+   操作リンク（.btn.here と同じ役割）。.btn.here に倣い、幅は詰めたまま
+   高さだけ44pxのタップ領域を確保する */
+.tl-links a{display:inline-flex;align-items:center;min-height:44px}
 .hero-tag{font-family:"Zen Kaku Gothic New",system-ui,sans-serif;font-size:10px;
   letter-spacing:.06em;color:#fff;background:var(--miso);padding:2px 8px;border-radius:2px;
   margin-left:8px;vertical-align:2px;font-weight:700;white-space:nowrap}
@@ -280,7 +284,7 @@ section.tight{padding-top:0}
 .mk-ng{color:var(--miso)}
 .mk-q{color:var(--kin);font-size:11.5px}
 .tel-line{display:block;font-size:11.5px;font-weight:400;margin-top:2px}
-.tel-line a{white-space:nowrap}
+.tel-line a{white-space:nowrap;display:inline-flex;align-items:center;min-height:44px}
 
 /* 地下鉄マップ（Task 13）。.submap-wrap だけを overflow-x:auto にして、
    幅375pxの端末でも地図だけが横スクロールしページ本体は動かないようにする。
@@ -346,7 +350,7 @@ section.tight{padding-top:0}
   /* 紙では操作できないものを消す */
   header[data-nav], .theme-toggle, .btnrow, .plan-switch-row, .sit,
   .now-jump, .clock-bar, .btn, .rec-box, .om-row .btn, .gacha, .qr-card,
-  .sum-card, .map-det, .rec .btn, .btn.here, .btn.vis{ display:none !important; }
+  .sum-card, .rec .btn, .btn.here, .btn.vis{ display:none !important; }
 
   /* 土産の個数・宛先入力も操作物なので消す（.om-row .btn だけでは
      input 2つ（.om-qty/.om-who）が残ってしまうため、明示的に加える） */
@@ -414,6 +418,18 @@ section.tight{padding-top:0}
     content-visibility:visible !important; block-size:auto !important; overflow:visible !important;
   }
 
+  /* 地下鉄マップ（.map-det）は電池切れ時の紙の命綱なので、他の <details> と違って
+     画面と逆に紙では常に開いた状態で出す。.submap-wrap の強制表示は
+     .spot-body-wrap 等と同じ理由（古いブラウザは display:none で畳む）。
+     .submap の min-width:520px を画面のまま持ち込むと余白の少ないページ幅を
+     超えて右側が欠けるため、印刷時だけ幅を紙面に収まる値に落とす。 */
+  .map-det{ display:block !important; break-inside:avoid; margin:4pt 0 6pt; }
+  .map-det summary{ padding:0 0 3pt; min-height:0; color:#000; font-weight:600; }
+  .submap-wrap{ display:block !important; border:1px solid #bbb; padding:5pt; }
+  .submap{ width:210pt; min-width:0; height:auto; margin:0 auto; display:block; }
+  .submap-legend{ color:#333; margin-top:4pt; gap:7pt; font-size:9pt; }
+  .map-det .notice{ color:#333; margin-top:4pt; font-size:8.5pt; }
+
   /* 行程は詰める */
   .tl{ padding:6pt 8pt; }
   .tl-item{ padding-bottom:4pt; break-inside:avoid; }
@@ -425,6 +441,11 @@ section.tight{padding-top:0}
 
   /* リンクの下線は残すがURLは展開しない。行程の可読性を優先する */
   a{ color:#000; text-decoration:underline; }
+
+  /* 画面向けの44pxタップ領域（.tl-links a / .tel-line a）は紙では意味がなく、
+     そのまま持ち込むと行程の各コマ・営業時間表の各行が縦に伸びてページ数が
+     増える。印刷では詰めて戻す。 */
+  .tl-links a, .tel-line a{ display:inline; min-height:auto; }
 
   @page{ size:A4; margin:12mm; }
 }

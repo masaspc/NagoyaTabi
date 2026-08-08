@@ -1,6 +1,6 @@
 /* 一覧は手で並べる。ビルドがないため自動生成しない。
    ファイルを足したら PRECACHE と VERSION の両方を更新すること。 */
-var VERSION = 'nt-v3';
+var VERSION = 'nt-v4';
 var PRECACHE = [
   './',
   'index.html', 'spots.html', 'gourmet.html', 'tips.html',
@@ -60,8 +60,11 @@ self.addEventListener('fetch', function (e) {
         }
         return res;
       }).catch(function () {
-        /* オフラインで未キャッシュのものを求められたら、行程ページに落とす */
-        return caches.match('index.html');
+        /* オフラインで未キャッシュのものを求められたら、ナビゲーション（ページ遷移）
+           に限って行程ページへ落とす。script/link等はここに来ても素直に失敗させる。
+           そうしないと、例えばキャッシュ漏れしたスクリプトが index.html のHTMLを
+           script の中身として受け取り、原因不明の壊れ方をする */
+        if (e.request.mode === 'navigate') return caches.match('index.html');
       });
     })
   );
