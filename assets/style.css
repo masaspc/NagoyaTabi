@@ -148,3 +148,14 @@ footer{background:var(--head-bg);color:var(--head-sub);padding:24px 0;font-size:
 .btn.here{font-size:11px;padding:5px 10px;min-height:32px;margin-top:7px}
 
 .rec-hint{margin:8px 2px 4px;font-size:11.5px;color:var(--gray)}
+
+.sit{margin:18px 0 0}
+.sit-label{font-size:11px;letter-spacing:.18em;color:var(--gray);margin-bottom:7px;
+  font-family:"Space Mono",ui-monospace,monospace}
+.tl-item.has-alt .tl-body{background:rgba(107,50,38,.07);margin-left:-4px;
+  padding:6px 9px 8px 21px;border-radius:2px}
+.tl-item.has-alt .tl-body::before{background:var(--miso);border-color:var(--miso)}
+.alt-tag{font-family:"Zen Kaku Gothic New",system-ui,sans-serif;font-size:10px;
+  color:#fff;background:var(--rokusho-mid);padding:2px 7px;border-radius:2px;
+  margin-left:8px;vertical-align:2px;font-weight:700}
+.tl-orig{display:block;font-size:11.5px;color:var(--gray);margin-top:5px;text-decoration:line-through}
