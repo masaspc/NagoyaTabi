@@ -90,7 +90,8 @@ table{border-collapse:collapse;width:100%;min-width:560px;font-size:13px}
 th,td{padding:11px 13px;text-align:left;border-bottom:1px solid var(--rule);vertical-align:top}
 thead th{background:var(--rokusho-deep);color:#fff;
   font-family:"Shippori Mincho B1",serif;font-size:13.5px;position:sticky;top:0}
-tbody th{font-weight:700;font-size:13px;white-space:nowrap;background:var(--paper-hi)}
+tbody th{font-weight:700;font-size:13px;white-space:nowrap;background:var(--paper-hi);
+  position:sticky;left:0;z-index:1}
 
 footer{background:var(--head-bg);color:var(--head-sub);padding:24px 0;font-size:12.5px;margin-top:20px}
 
@@ -250,3 +251,11 @@ section.tight{padding-top:0}
   background:var(--bg);color:var(--fg);border:1px solid var(--rule);border-radius:2px;
   font-family:inherit}
 .rec-photo{width:100%;max-width:280px;border-radius:3px;margin-top:2px;display:block}
+
+/* 実用メモページ: 営業判定マーク・電話番号 */
+.mk{text-align:center;font-weight:700;white-space:nowrap}
+.mk-ok{color:var(--rokusho)}
+.mk-ng{color:var(--miso)}
+.mk-q{color:var(--kin);font-size:11.5px}
+.tel-line{display:block;font-size:11.5px;font-weight:400;margin-top:2px}
+.tel-line a{white-space:nowrap}
