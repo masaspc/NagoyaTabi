@@ -154,6 +154,14 @@
     var root = NT.$('#spots-root');
     if (!root) return;
     root.textContent = '';
+    if (NT.buildGacha) {
+      root.appendChild(NT.el('section', {}, [
+        NT.el('div', { class: 'sec-head' }, [
+          NT.el('span', { class: 'no', text: '00' }), NT.el('h2', { text: '豆知識' })
+        ]),
+        NT.buildGacha()
+      ]));
+    }
     root.appendChild(NT.el('section', {}, [
       NT.el('div', { class: 'sec-head' }, [
         NT.el('span', { class: 'no', text: '01' }), NT.el('h2', { text: '絞り込み' })

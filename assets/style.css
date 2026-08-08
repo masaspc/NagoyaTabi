@@ -319,3 +319,13 @@ section.tight{padding-top:0}
 .tips-det summary h2{font-size:16.5px}
 .tips-body-wrap{padding:0 17px 18px;border-top:1px solid var(--rule)}
 .tips-body-wrap>*:first-child{margin-top:15px}
+
+/* 豆知識ガチャ（Task 14）: 引いたカードは金枠で強調する。名所ページの
+   先頭に来るため section 内 .card として既存の余白ルールに乗る */
+.gacha-card{border:1px solid var(--kin);border-radius:3px;padding:14px 15px;
+  background:linear-gradient(160deg,rgba(199,154,60,.14),rgba(199,154,60,0));margin-bottom:11px}
+.gacha-no{font-size:10.5px;letter-spacing:.2em;color:var(--gray);margin-bottom:6px}
+.gacha-text{margin:7px 0 0;font-size:13.5px;line-height:1.8}
+.gacha-bar{height:5px;background:var(--rule);border-radius:3px;overflow:hidden;margin-top:4px}
+.gacha-fill{height:100%;background:var(--kin);transition:width .3s ease}
+@media (prefers-reduced-motion:reduce){.gacha-fill{transition:none}}
