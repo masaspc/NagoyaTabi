@@ -21,6 +21,7 @@
     if (spot.unverified) return '要確認';
     var closed = spot.closed || '';
     if (!closed) return '○';
+    if (/不定休|要確認/.test(closed)) return '要確認';
     var dow = ['日', '月', '火', '水', '木', '金', '土'][NT.parseHM('00:00', dateISO).getDay()];
 
     var re = /((?:第[0-9一二三四五六七八九十]+)+|最終)?([月火水木金土日])曜/g;

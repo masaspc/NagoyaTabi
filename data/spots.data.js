@@ -563,7 +563,7 @@
       indoor:true, shade:true,
       station:'JR名古屋駅 太閤通口', walk:'徒歩1分（直結）',
       hours:'10:00-20:30 頃（飲食店は21:00頃まで、店舗により異なる）',
-      closed:'不定休 頃',
+      closed:'1/1・2月第3木曜・9月第2木曜（全館休業、公式サイト調べ）',
       fee:'入場無料', stay:40,
       lat:35.1699, lng:136.8823,
       map:'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent('エスカ地下街'),
