@@ -135,3 +135,14 @@ footer{background:var(--head-bg);color:var(--head-sub);padding:24px 0;font-size:
 .tl-item.is-now .tl-body{outline:2px solid var(--kin);outline-offset:3px;border-radius:2px}
 .tl-item.is-now .tl-body strong{color:var(--kin)}
 .tl-item.is-past{opacity:.5}
+
+.rec{background:var(--card);border:1px solid var(--miso);border-left:4px solid var(--miso);
+  border-radius:3px;padding:13px 15px;margin:10px 0 4px}
+.rec-head{font-weight:700;color:var(--miso);font-size:14px}
+.rec-line{margin:7px 0 0;font-size:12.5px;color:var(--fg)}
+.rec-line.ok{color:var(--rokusho);font-weight:700}
+.rec-line.ng{color:var(--miso);font-weight:700}
+.rec-cuts{margin:6px 0 0;padding-left:20px;font-size:12.5px}
+.rec-cuts li{margin:2px 0}
+.rec .btn{margin-top:11px;font-size:12px;padding:7px 11px;min-height:36px}
+.btn.here{font-size:11px;padding:5px 10px;min-height:32px;margin-top:7px}
