@@ -43,9 +43,22 @@
        常に見つからず -1 になる（from が 0 になり、既に終わったコマまで削減候補に
        入ってしまう）。必ず NT.slotIndex で .key を引き直す。 */
     var from = NT.slotIndex(plan, d.slot.key) + 1;
-    var after = list.slice(from);
+    /* 日をまたぐ削減は提案しない。翌日のコマを削っても前夜の遅れは取り戻せない ――
+       間に宿泊という区切りが入り、Day 2 は前日の続きではなく時計どおりに始まる。
+       日付文字列や時刻の前後関係では旅程の途中に日付が変わる場合を正しく扱えない
+       ことがあるため、必ず dayIndex を直接比較する。 */
+    var after = list.slice(from).filter(function (s) { return s.dayIndex === d.slot.dayIndex; });
 
-    /* 次に控える固定点。ここに間に合わせるのが目的 */
+    /* 次に控える固定点。「これに間に合うか」ではなく「この締切が来るまでに、この日の
+       残り時間で遅れを吸収しきれるか」を見る判定。hardDeadline は「開園終了」「ラスト
+       オーダー」「入館締切」「乗車」など意味がまちまちで、どれも共通して言えるのは
+       「その時刻までにこの用件を終えている必要がある」ということだけであり、
+       「その時刻までに現地に到着さえすればいい」ではない。だから締切のコマ自身を
+       削る候補から除外する理由はない ―― そこでの滞在を削ることは「その用件に使う
+       時間を削って、日全体の帳尻を合わせる」ことであり、削減候補としては他のコマと
+       対等。「◯◯に間に合う/間に合わない」という文言は、この帳尻合わせの結果を指す
+       ものであって、現地への到達可否を保証するものではない（下の recoveryBox の
+       文言もそのように統一する）。 */
     var deadline = null;
     for (var i = 0; i < after.length; i++) {
       if (after[i].item.hardDeadline) { deadline = after[i]; break; }
@@ -83,11 +96,14 @@
       })));
     }
     if (r.deadline) {
+      /* 「間に合う」＝現地への到達可否ではなく、この締切が来るまでにこの日の遅れを
+         削減で吸収しきれるか、という帳尻の話。締切のコマ自身が削減候補に入り得る
+         のはそのため（そこでの滞在を削るのも帳尻合わせの一部）。 */
       var ok = r.shortfall <= 0;
       kids.push(NT.el('p', { class: 'rec-line' + (ok ? ' ok' : ' ng'),
         text: (ok ? '✓ ' : '✗ ') + r.deadline.item.title + ' の ' + r.deadline.item.hardDeadline +
-              '（' + (r.deadline.item.deadlineWhy || '締切') + '）に' +
-              (ok ? '間に合います' : 'は ' + r.shortfall + '分 足りません') }));
+              '（' + (r.deadline.item.deadlineWhy || '締切') + '）までに、この日の遅れを' +
+              (ok ? '吸収できます' : '吸収しきれません（' + r.shortfall + '分 不足）') }));
     }
     if (r.shortfall > 0) {
       kids.push(NT.el('p', { class: 'rec-line ng',
