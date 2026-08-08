@@ -252,6 +252,28 @@ section.tight{padding-top:0}
   font-family:inherit}
 .rec-photo{width:100%;max-width:280px;border-radius:3px;margin-top:2px;display:block}
 
+/* 土産の買い物リスト（Task 12）: カード = <details>。spot/food と同じ折りたたみ
+   パターンだが、締切バッジ・数量・宛先・買った ボタンはすべて summary に置き、
+   畳んだままでも操作できるようにする（駅で残り時間が少ないときの主用途に合わせた
+   判断）。where/caution の説明文だけが開いたときの本文側。
+   .om-qty/.om-who/.om-row .btn は min-height を明示しない（あるいは 44px を明示）。
+   button,select,.btn には行頭の全体ルールで min-height:44px が効くため、ここで
+   小さい値を上書きするとタップ領域が規定未満になる。 */
+.card.om{padding:0;margin-bottom:9px}
+.om > summary{cursor:pointer;padding:12px 17px;list-style:none;
+  -webkit-tap-highlight-color:transparent}
+.om > summary::-webkit-details-marker{display:none}
+.om > summary::marker{content:''}
+.om[open] .chev{transform:rotate(90deg)}
+.om.done{opacity:.62;border-left:4px solid var(--rokusho)}
+.om-row{display:flex;flex-wrap:wrap;gap:7px;align-items:center;margin-top:10px}
+.om-dl{font-size:11px;color:var(--miso);white-space:nowrap;display:inline-flex;align-items:center}
+.om-qty{width:64px;font-size:13px;padding:8px;min-height:44px;
+  background:var(--bg);color:var(--fg);border:1px solid var(--rule);border-radius:2px;font-family:inherit}
+.om-who{flex:1 1 110px;min-width:90px;font-size:13px;padding:8px 10px;min-height:44px;
+  background:var(--bg);color:var(--fg);border:1px solid var(--rule);border-radius:2px;font-family:inherit}
+.om-row .btn{font-size:11.5px;padding:6px 11px}
+
 /* 実用メモページ: 営業判定マーク・電話番号 */
 .mk{text-align:center;font-weight:700;white-space:nowrap}
 .mk-ok{color:var(--rokusho)}
