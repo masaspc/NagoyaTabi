@@ -121,3 +121,17 @@ footer{background:var(--head-bg);color:var(--head-sub);padding:24px 0;font-size:
   box-shadow:0 0 0 4px rgba(199,154,60,.22)}
 .k-poke .tl-body{background:linear-gradient(90deg,rgba(199,154,60,.16),rgba(199,154,60,0));
   margin-left:-4px;padding:5px 8px 7px 21px;border-radius:2px}
+
+.now-bar{background:var(--head-bg);color:var(--head-fg);border-left:4px solid var(--gray);
+  border-radius:3px;padding:13px 15px;margin:18px 0 4px}
+.now-bar.active{border-left-color:var(--kin)}
+.now-label{font-size:10.5px;letter-spacing:.2em;color:var(--kin-light)}
+.now-title{font-size:16px;font-weight:700;margin-top:4px;font-family:"Shippori Mincho B1",serif}
+.now-sub{font-size:12.5px;color:var(--head-sub);margin-top:4px}
+.now-jump{display:inline-block;font-size:12px;margin-top:8px;color:var(--kin-light)}
+.clock-bar{display:flex;align-items:center;gap:9px;margin-top:11px;
+  padding-top:10px;border-top:1px solid rgba(199,154,60,.3);font-size:11.5px;color:var(--head-sub)}
+.clock-bar select{max-width:200px;font-size:12px;padding:6px 8px}
+.tl-item.is-now .tl-body{outline:2px solid var(--kin);outline-offset:3px;border-radius:2px}
+.tl-item.is-now .tl-body strong{color:var(--kin)}
+.tl-item.is-past{opacity:.5}
