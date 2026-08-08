@@ -140,7 +140,12 @@
         geoBtn,
         NT.el('button', { class: 'btn' + (state.sort === 'area' ? ' on' : ''),
           type: 'button', text: 'エリア順',
-          onclick: function () { state.sort = 'area'; NT.renderSpots(); } })
+          /* state.origin を消す。sort だけを 'area' に倒して origin を残すと、
+             card() の distance 表示が state.origin の有無だけで判定しているため
+             （エリア順に戻っても）過去に取得した位置からの距離が出続けてしまう。
+             歩いて移動した後の古い距離は、出さないより悪い。origin ごと捨てて
+             再度「現在地から近い順」を押したときは必ず取り直させる。 */
+          onclick: function () { state.sort = 'area'; state.origin = null; NT.renderSpots(); } })
       ])
     ]);
   }
