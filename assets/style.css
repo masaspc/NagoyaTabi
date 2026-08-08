@@ -113,7 +113,7 @@ footer{background:var(--head-bg);color:var(--head-sub);padding:24px 0;font-size:
 .tl-links{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:6px;font-size:12px}
 .hero-tag{font-family:"Zen Kaku Gothic New",system-ui,sans-serif;font-size:10px;
   letter-spacing:.06em;color:#fff;background:var(--miso);padding:2px 8px;border-radius:2px;
-  margin-left:8px;vertical-align:2px;font-weight:700}
+  margin-left:8px;vertical-align:2px;font-weight:700;white-space:nowrap}
 .k-meal .tl-body::before{background:var(--rokusho);border-color:var(--rokusho)}
 .k-hero .tl-body::before{background:var(--miso);border-color:var(--miso)}
 .k-move .tl-body::before{background:var(--gray);border-color:var(--gray)}
