@@ -1,6 +1,13 @@
-/* 遅延リカバリ。「今ここ」の明示記録があればそれを優先し、なければ現在のコマの
-   予定終了超過から遅れを推定する。削る余地は stay-minStay（未保存・都度計算）の
-   大きい順に割り当てる提案のみを行い、行程データ自体は書き換えない。 */
+/* 遅延リカバリ。遅れの唯一の情報源は「今ここ」の明示記録。
+   NT.currentSlot(plan) は定義上「start <= now < end」を満たすコマしか返さないため、
+   これと now を比べる限り差は絶対に正にならない ―― 時計だけからは「予定のどのコマに
+   いるべきか」は分かっても「実際にどれだけ遅れているか」は原理的に分からない
+   （currentSlot はスケジュール通りの位置を返すだけで、旅行者が本当にそこにいる保証は
+   ない）。start/stay/end のどんな式に置き換えても、スケジュール上「今いるはずのコマ」
+   の中にいる限り遅れは検出できない ―― むしろ「まだ余裕がある」だけの滞在（例: 105分の
+   枠に35分の軽食で、まだ10分しか経っていない）を遅れと誤検知し、削らなくていいコマを
+   削らせる誤警報になる。誤警報は機能なしより悪い。よって暗黙推定は行わず、明示の
+   「今ここ」記録だけを遅れの根拠にする。 */
 (function (w) {
   var NT = w.NT;
   var THRESHOLD = 15; /* これ以下の遅れは提案しない */
@@ -22,22 +29,6 @@
         var d = Math.round((new Date(pr.at) - s.start) / 60000);
         return { minutes: Math.max(0, d), source: 'explicit', slot: s };
       }
-    }
-    var cur = NT.currentSlot(plan);
-    if (cur) {
-      /* NT.currentSlot は「start <= now < end」を満たすコマを返す（Task 5 の定義通り）。
-         その cur.end（次のコマの開始で切り詰められた枠）と now を比べると、選ばれた
-         時点で必ず now < cur.end なので差は絶対に正にならない ―― 「終了超過」が
-         検出不能になる死んだ分岐になってしまう。予定終了とは、そのコマ自身に割り当て
-         られた滞在時間（stay）が尽きることだと読み替え、cur.start + stay 分を実際の
-         「予定終了」として使う。次のコマの開始が詰まっていて cur.end の方が早い区間
-         （例: 名古屋城まつり中に鯱食堂を挟む重なり）では、そのコマがアクティブな間は
-         自然終了が枠の外に出るため常に負になり得るが、通常の滞在（次のコマまで余裕が
-         ある）では自然終了が枠内で先に来るので、そこを超えれば正しく遅れとして拾える。 */
-      var naturalEnd = new Date(cur.start.getTime() + (cur.item.stay || 30) * 60000);
-      var over = Math.round((NT.now() - naturalEnd) / 60000);
-      if (over > 0) return { minutes: over, source: 'implicit', slot: cur };
-      return { minutes: 0, source: 'implicit', slot: cur };
     }
     return { minutes: 0, source: 'none', slot: null };
   };
@@ -79,8 +70,8 @@
     var r = NT.recoveryPlan(plan);
     if (!r) return null;
     var kids = [
-      NT.el('div', { class: 'rec-head', text: '⚠ 予定より ' + r.delay.minutes + '分 遅れ' +
-        (r.delay.source === 'explicit' ? '（「今ここ」の記録から）' : '（時刻から推定）') })
+      NT.el('div', { class: 'rec-head',
+        text: '⚠ 「今ここ」の記録から ' + r.delay.minutes + '分 遅れています' })
     ];
     if (r.cuts.length) {
       kids.push(NT.el('p', { class: 'rec-line', text: '次のように削れば取り戻せます。' }));
@@ -123,10 +114,20 @@
     }));
   });
 
+  /* リカバリ箱が出ない間、静かな一行の誘導だけを now-bar の下に添える。警告ではなく
+     ヒントなので、rec とは別の控えめなクラスにし、色も miso（警告色）にしない。
+     今どこかのコマの最中でなければ「遅れ」の意味がないので、その間だけ出す。 */
+  function recoveryHint(plan) {
+    if (!NT.currentSlot(plan)) return null;
+    return NT.el('p', { class: 'rec-hint',
+      text: '遅れていたら、今いる場所の「今ここ」を押してください。取り戻せる分を提案します。' });
+  }
+
   NT.afterRender.push(function (plan) {
-    var box = recoveryBox(plan);
-    if (!box) return;
     var bar = NT.$('.now-bar');
+    if (!bar) return;
+    var box = recoveryBox(plan) || recoveryHint(plan);
+    if (!box) return;
     bar.parentNode.insertBefore(box, bar.nextSibling);
   });
 })(window);
