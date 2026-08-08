@@ -115,6 +115,10 @@
     return out;
   };
 
+  /* currentSlot/nextSlot each call flatItems internally and return one of ITS OWN fresh
+     object literals — never the same object twice, and the demo clock can change the
+     answer between any two calls. Do not hold a slot reference across calls and never
+     compare with === or Array#indexOf; look it up again by .key via NT.slotIndex. */
   NT.currentSlot = function (plan) {
     var t = NT.now().getTime(), list = NT.flatItems(plan);
     for (var i = 0; i < list.length; i++) {
@@ -127,6 +131,13 @@
     for (var i = 0; i < list.length; i++) if (list[i].start.getTime() > t) return list[i];
     return null;
   };
+  /* 参照ではなく key で引き直すための唯一の正しい手段。Task 6 の遅延リカバリはこれで
+     現在のコマの位置を求めてから残りをスライスする */
+  NT.slotIndex = function (plan, key) {
+    var list = NT.flatItems(plan);
+    for (var i = 0; i < list.length; i++) if (list[i].key === key) return i;
+    return -1;
+  };
 
   function mins(ms) { return Math.round(ms / 60000); }
   function human(m) {
@@ -134,23 +145,48 @@
     return Math.floor(m / 60) + '時間' + (m % 60 ? (m % 60) + '分' : '');
   }
 
-  /* 旅程外で開いたときに出すデモ時刻セレクタ。旅の前に全機能を試せるようにするため */
+  /* 旅程外で開いたときに出すデモ時刻セレクタ。旅の前に全機能を試せるようにするため。
+     ラベルはプランごとに違う行程に対して固定文字列で書くと（例:「ポケセン」が
+     プランBでは大須の時間に化ける、プランBに存在しない「叶」を指すなど）プラン切替の
+     たびに嘘のラベルになる。そこで時刻だけを固定し、ラベルは描画時に選択中のプランへ
+     問い合わせて「その時刻に実際どのコマにいるか」から組み立てる。'遅れ検証' のように
+     場所ではなくテスト用途を示すものだけ tag を添えて残す */
   var DEMO = [
-    ['8/11 12:10 叶の直前', '2026-08-11T12:10:00'],
-    ['8/11 16:00 ポケセン', '2026-08-11T16:00:00'],
-    ['8/11 19:30 遅れ検証', '2026-08-11T19:30:00'],
-    ['8/12 09:50 徳川美術館', '2026-08-12T09:50:00'],
-    ['8/12 13:40 土産', '2026-08-12T13:40:00'],
-    ['8/13 10:00 旅の後', '2026-08-13T10:00:00']
+    { iso: '2026-08-11T12:10:00' },
+    { iso: '2026-08-11T16:00:00' },
+    { iso: '2026-08-11T19:30:00', tag: '遅れ検証' },
+    { iso: '2026-08-12T09:50:00' },
+    { iso: '2026-08-12T13:40:00' },
+    { iso: '2026-08-13T10:00:00', tag: '旅の後' }
   ];
 
-  function clockBar() {
+  /* plan における、任意時刻（NT.now() ではなく明示の ms）に入っているコマ。
+     デモの選択肢ラベルを作るためだけの内部ヘルパーで、NT.now() は経由しない
+     （現在時刻ではなく「この選択肢を選んだら」の時刻を問うため） */
+  function slotAtTime(plan, ms) {
+    var list = NT.flatItems(plan);
+    for (var i = 0; i < list.length; i++) {
+      if (ms >= list[i].start.getTime() && ms < list[i].end.getTime()) return list[i];
+    }
+    return null;
+  }
+
+  function demoLabel(d, plan) {
+    var dt = new Date(d.iso);
+    var mm = ('0' + (dt.getMonth() + 1)).slice(-2).replace(/^0/, '');
+    var dd = ('0' + dt.getDate()).slice(-2).replace(/^0/, '');
+    var slot = slotAtTime(plan, dt.getTime());
+    var where = slot ? slot.item.title : '旅程外';
+    return mm + '/' + dd + ' ' + NT.fmtTime(dt) + ' ' + where + (d.tag ? '／' + d.tag : '');
+  }
+
+  function clockBar(plan) {
     var faked = NT.isClockFaked();
     var sel = NT.el('select', { class: 'btn', 'aria-label': 'デモ時刻を選ぶ',
       onchange: function () { NT.setClock(sel.value || null); NT.renderItinerary(); } },
       [NT.el('option', { value: '', text: '実際の時刻' })].concat(DEMO.map(function (d) {
-        return NT.el('option', { value: d[1], text: d[0],
-          selected: NT.get('clock', null) === d[1] ? true : null });
+        return NT.el('option', { value: d.iso, text: demoLabel(d, plan),
+          selected: NT.get('clock', null) === d.iso ? true : null });
       })));
     return NT.el('div', { class: 'clock-bar' }, [
       NT.el('span', { class: 'mono', text: '⏱ ' + NT.fmtTime(NT.now()) + (faked ? '（デモ）' : '') }),
@@ -160,6 +196,8 @@
 
   function nowBar(plan) {
     var cur = NT.currentSlot(plan), nx = NT.nextSlot(plan), now = NT.now();
+    var list = NT.flatItems(plan);
+    var tripStart = list.length ? list[0].start.getTime() : null;
     var box = NT.el('div', { class: 'now-bar' + (cur ? ' active' : '') });
     if (cur) {
       box.appendChild(NT.el('div', { class: 'now-label mono', text: 'NOW ' + NT.fmtTime(now) }));
@@ -168,6 +206,13 @@
         text: 'このコマは残り ' + human(mins(cur.end - now)) +
               (nx ? ' ／ 次は ' + nx.item.time + ' ' + nx.item.title : ' ／ これが最後') }));
       box.appendChild(NT.el('a', { class: 'now-jump', href: '#item-' + cur.key, text: 'このコマへ' }));
+    } else if (nx && tripStart !== null && now.getTime() >= tripStart) {
+      /* 旅の初日が始まった後・最終コマが終わる前の「間」（例: 夜に伍味酉が終わって
+         翌朝の最初のコマが始まるまで）。旅程前でも旅程終了でもないので、
+         その語を使わずに「今は合間で、次はこれ」とだけ言う */
+      box.appendChild(NT.el('div', { class: 'now-label mono', text: '合間 ' + NT.fmtTime(now) }));
+      box.appendChild(NT.el('div', { class: 'now-title',
+        text: '本日のコマの合間です。次は ' + nx.day.label.slice(0, 5) + ' ' + nx.item.time + ' ' + nx.item.title }));
     } else if (nx) {
       box.appendChild(NT.el('div', { class: 'now-label mono', text: '旅程前 ' + NT.fmtTime(now) }));
       box.appendChild(NT.el('div', { class: 'now-title',
@@ -176,7 +221,7 @@
       box.appendChild(NT.el('div', { class: 'now-label mono', text: '旅程終了' }));
       box.appendChild(NT.el('div', { class: 'now-title', text: 'おつかれさまでした' }));
     }
-    box.appendChild(clockBar());
+    box.appendChild(clockBar(plan));
     return box;
   }
 
