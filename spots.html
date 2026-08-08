@@ -26,7 +26,12 @@
 <script src="data/trivia.data.js"></script>
 <script src="assets/triviagacha.js"></script>
 <script src="assets/spotlist.js"></script>
-<script>NT.mountNav('spots.html'); NT.renderSpots();</script>
+<script src="assets/swipe.js"></script>
+<script>
+  NT.mountNav('spots.html');
+  NT.renderSpots();
+  NT.initSwipe('spots.html');
+</script>
 <script>
   if ('serviceWorker' in navigator && location.protocol.indexOf('http') === 0) {
     navigator.serviceWorker.register('sw.js').catch(function () {});

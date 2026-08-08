@@ -26,7 +26,12 @@
 <script src="data/foods.data.js"></script>
 <script src="assets/gourmetlist.js"></script>
 <script src="assets/record.js"></script>
-<script>NT.mountNav('gourmet.html'); NT.renderGourmet();</script>
+<script src="assets/swipe.js"></script>
+<script>
+  NT.mountNav('gourmet.html');
+  NT.renderGourmet();
+  NT.initSwipe('gourmet.html');
+</script>
 <script>
   if ('serviceWorker' in navigator && location.protocol.indexOf('http') === 0) {
     navigator.serviceWorker.register('sw.js').catch(function () {});
