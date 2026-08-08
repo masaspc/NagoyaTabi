@@ -1,0 +1,13 @@
+{
+  "name": "名古屋 王道 2026.8.11-12",
+  "short_name": "名古屋旅",
+  "start_url": "index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#EAEDE6",
+  "theme_color": "#0D2B28",
+  "lang": "ja",
+  "icons": [
+    { "src": "assets/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

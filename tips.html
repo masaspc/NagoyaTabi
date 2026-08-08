@@ -30,5 +30,10 @@
 <script src="assets/tipspage.js"></script>
 <script src="assets/omiyage.js"></script>
 <script>NT.mountNav('tips.html'); NT.renderTips();</script>
+<script>
+  if ('serviceWorker' in navigator && location.protocol.indexOf('http') === 0) {
+    navigator.serviceWorker.register('sw.js').catch(function () {});
+  }
+</script>
 </body>
 </html>
