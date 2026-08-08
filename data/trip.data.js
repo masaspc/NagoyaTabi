@@ -49,15 +49,16 @@
                  '狙うのは大盆踊り18:00-20:00（西之丸）、大道芸16:00-20:30、城子屋「名古屋城と怪異」18:00-19:30',
             stay:105, minStay:45, hardDeadline:'20:30', deadlineWhy:'開園終了（閉門21:00）',
             alts:{
-              rain:{ title:'盆踊りは中止の可能性。オアシス21か栄へ', spotId:'oasis21',
-                note:'雨天時の催し中止は公式サイトで告知される。城まで出る前に確認' }
+              rain:{ title:'金シャチ横丁で雨宿りしつつ中止を確認', spotId:'kinshachi-yokocho',
+                note:'大盆踊り18:00-20:00の中止は公式サイトで告知される。屋根のある金シャチ横丁で待ちながら確認し、' +
+                     '中止が確定してから栄・オアシス21へ動けば無駄足にならない' }
             } },
           { time:'18:45', title:'鯱食堂で軽くつまむ', spotId:'shachihoko-shokudo', kind:'meal',
             note:'城内の飲食ブース。16:00-20:30。かき氷とビール、屋台グルメ。夜の本番があるので一皿だけ',
             stay:35, minStay:15,
             alts:{
-              rain:{ title:'金シャチ横丁へ', spotId:'kinshachi-yokocho',
-                note:'城の外だが屋根のある区画がある。天むすとどて煮' }
+              rain:{ title:'金シャチ横丁で天むすとどて煮', spotId:'kinshachi-yokocho',
+                note:'盆踊りが続いていれば横丁で食べながら待てる。中止確定で栄へ動いていたら、このまま栄で軽く済ませてもいい' }
             } },
           { time:'20:30', title:'名古屋コーチン｜伍味酉 本店（栄）', spotId:'gomitori',
             kind:'hero', hero:'コーチン',
