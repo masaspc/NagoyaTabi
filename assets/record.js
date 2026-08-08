@@ -1,6 +1,16 @@
 /* Task 10: 五食制覇メーターと、名物ごとの「食べた」記録（チェック・メモ・写真）。
-   gourmetlist.js の後、renderGourmet() を呼ぶ前に読むこと（NT.gourmetSections /
-   NT.foodDecorators への登録が描画前に済んでいる必要があるため）。
+   gourmet.html では gourmetlist.js の後、renderGourmet() を呼ぶ前に読む
+   （NT.gourmetSections / NT.foodDecorators への登録が描画前に済んでいる
+   必要があるため）。
+
+   Task 16 で tips.html にも読ませるようになった。tips.html は
+   gourmetlist.js を読まない（#gourmet-root が無く renderGourmet も呼ばない
+   ため、gourmetSections/foodDecorators に登録しても使われない）ので、
+   NT.summaryData/summaryCounts が使う NT.checks/NT.setCheck/NT.progressCounts
+   だけが要る。それでも下の NT.gourmetSections.push(...) が未定義の配列に
+   push しようとして例外を投げないよう、ここで防御的に初期化しておく
+   （tipspage.js が同じ理由で NT.tipsSections を防御的に初期化しているのと
+   同じパターン）。
 
    保存先を分ける: チェックとメモは localStorage の nt:checks、写真だけ IndexedDB
    (DB名 nt-photos / ストア photos) に置く。localStorage は5MB前後で上限があり、
@@ -10,6 +20,8 @@
    写真保存の失敗は写真だけで完結する。 */
 (function (w) {
   var NT = w.NT;
+  NT.gourmetSections = NT.gourmetSections || [];
+  NT.foodDecorators = NT.foodDecorators || [];
 
   /* ---- 五食の枠。data/foods.data.js の slot と対応 ---- */
   NT.SLOTS = [

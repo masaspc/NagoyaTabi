@@ -335,6 +335,11 @@ section.tight{padding-top:0}
 .qr-card canvas{display:block;margin:11px auto 0;border:1px solid var(--rule);background:#fff}
 .qr-url{font-size:11px;color:var(--gray);word-break:break-all;text-align:center;margin:9px 0 0}
 
+/* 旅サマリー画像（Task 16）: キャンバス自体は固定配色（テーマ非追従）で
+   summary.js が描く。ここは表示サイズと枠線だけをテーマの --rule に合わせる。 */
+.sum-card canvas{display:block;width:100%;max-width:360px;height:auto;margin:11px auto;
+  border:1px solid var(--rule);border-radius:3px}
+
 /* 印刷レイアウト（Task 18）: 電池切れの保険。行程と営業時間表を紙に落とす。
    操作するものは紙の上では押せないため全て消す。 */
 @media print{
