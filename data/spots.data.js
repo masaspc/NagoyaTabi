@@ -218,7 +218,7 @@
       hours:'11:30-14:30(L.O.) / 16:30-20:30',
       closed:'火曜・第2第4月曜（祝日は営業、その場合は振替休あり）',
       fee:'ひつまぶし 4,000-5,500円程度', stay:70,
-      lat:35.1275, lng:136.9090,
+      lat:35.1275, lng:136.9090, tel:'052-682-5598',
       map:'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent('あつた蓬莱軒 神宮店'),
       official:'https://www.houraiken.com/',
       trivia:[
@@ -236,7 +236,7 @@
       hours:'11:30-14:00(L.O.) / 16:30-20:30 頃',
       closed:'水曜・第2第4木曜',
       fee:'ひつまぶし 4,000-5,500円程度', stay:70,
-      lat:35.1236, lng:136.9106,
+      lat:35.1236, lng:136.9106, tel:'052-671-8686',
       map:'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent('あつた蓬莱軒 本店'),
       official:'https://www.houraiken.com/',
       trivia:[
@@ -254,7 +254,7 @@
       hours:'土日祝 11:00-20:30 通し営業（平日はL.O.に空き時間あり）',
       closed:'火曜（祝日は営業、振替休あり）、松坂屋の休館日に準ずる',
       fee:'ひつまぶし 4,000-5,500円程度', stay:70,
-      lat:35.1637, lng:136.9068,
+      lat:35.1637, lng:136.9068, tel:'050-5785-4308',
       map:'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent('あつた蓬莱軒 松坂屋店'),
       official:'https://www.houraiken.com/',
       trivia:[
