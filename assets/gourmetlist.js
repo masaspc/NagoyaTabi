@@ -4,7 +4,13 @@
      読み込み順に依存しないよう防御的に初期化する */
   NT.gourmetSections = NT.gourmetSections || [];
   /* Task 10 がカードごとの記録欄（チェック・写真・メモ）を差し込む拡張点。
-     カードを組み立てた直後に function(card, food) として呼ばれる */
+     カードを組み立てた直後に function(card, food, parts) として呼ばれる。
+     parts.summary は <summary> 自身、parts.body はカード本文の div。
+     カードは既定で閉じており、閉じたまま見せたい操作（食べた チェックなど）は
+     parts.summary に付けること。<details> の子は summary 以外すべて閉じた
+     状態でネイティブに非表示になるため、parts.body に付けたものは開かないと見えない。
+     summary にクリック可能な要素を足す場合は spotlist.js の 訪問済にする ボタンに倣い、
+     click ハンドラで e.preventDefault()/e.stopPropagation() して開閉トグルへ伝播させない */
   NT.foodDecorators = NT.foodDecorators || [];
 
   var state = { cat: 'すべて' };
@@ -72,7 +78,9 @@
       if (det.open) openIds[f.id] = true; else delete openIds[f.id];
     });
 
-    NT.foodDecorators.forEach(function (fn) { fn(det, f); });
+    /* summary は details が閉じていても常に見える唯一の子。訪問済みトグルに倣い、
+       決まったクラス名を知らなくても正しい場所へ挿せるよう summary/body を渡す */
+    NT.foodDecorators.forEach(function (fn) { fn(det, f, { summary: summary, body: body }); });
     return det;
   }
 
