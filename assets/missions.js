@@ -185,11 +185,23 @@
     if (freshDraw && mc && w.NT.fx && !NT.fx.reducedMotion) {
       requestAnimationFrame(function () {
         mc.style.transformOrigin = 'center 25%';
-        mc.animate([
+        /* rotateX() を掛けている間、達成/失敗ボタンの getBoundingClientRect() は
+           回転による投影で高さが実測4px程度まで潰れる瞬間がある
+           （実測: t=0で高さ4px、44pxに戻るのはt=7〜8フレーム後）——scale()が
+           タップ領域を縮めた Task 28 の不具合と同じ形で、こちらは3D回転の分
+           さらに酷い。ボタン自体はこの間もdisabledではなく普通にクリック可能
+           なままなので、アニメーション中だけ pointer-events を切って
+           「見た目は動くが、その間は押せない」にする（押せないことに気付く
+           前に指が離れる程度の520ms なので体感は変えない）。 */
+        mc.style.pointerEvents = 'none';
+        var anim = mc.animate([
           { transform: 'rotateX(-84deg) scale(.94)', opacity: 0 },
           { transform: 'rotateX(8deg) scale(1.015)', opacity: 1, offset: .72 },
           { transform: 'rotateX(0deg) scale(1)', opacity: 1 }
         ], { duration: 520, easing: 'cubic-bezier(.25,.7,.3,1)' });
+        var restore = function () { mc.style.pointerEvents = ''; };
+        anim.onfinish = restore;
+        anim.oncancel = restore;
       });
     }
 
