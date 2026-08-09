@@ -44,9 +44,9 @@ a{color:var(--accent)}
 header[data-nav]{background:var(--head-bg);color:var(--head-fg);
   border-bottom:3px solid var(--kin);position:sticky;top:0;z-index:20}
 .nav{max-width:920px;margin:0 auto;padding:0 18px;display:flex;align-items:center;gap:4px}
-.nav a{flex:1;text-align:center;padding:13px 4px;color:var(--head-sub);
-  text-decoration:none;font-size:14px;font-weight:500;
-  border-bottom:2px solid transparent;min-height:44px}
+.nav a{flex:1;text-align:center;padding:13px 2px;color:var(--head-sub);
+  text-decoration:none;font-size:12.5px;font-weight:500;white-space:nowrap;
+  border-bottom:2px solid transparent;min-height:44px;display:flex;align-items:center;justify-content:center}
 .nav a.on{color:#fff;border-bottom-color:var(--kin);font-weight:700}
 .theme-toggle{background:none;border:1px solid rgba(199,154,60,.45);color:var(--kin-light);
   font-size:11px;padding:7px 9px;border-radius:2px;cursor:pointer;
@@ -448,4 +448,52 @@ section.tight{padding-top:0}
   .tl-links a, .tel-line a{ display:inline; min-height:auto; }
 
   @page{ size:A4; margin:12mm; }
+}
+
+/* あそびページ: 豆知識対戦クイズ（Task 22）。名前入力→設問→正誤発表→終了画面の
+   4状態を同じ .quiz-wrap の中で出し分ける。ボタン・入力欄は片手操作前提なので
+   button,select,.btn,a.btn の全体最低44pxに加え、素の <input> にも個別に
+   min-height:44px を明示する（全体ルールは input を対象にしていないため）。 */
+.quiz-wrap{margin-top:2px}
+.quiz-setup .notice{margin:0 0 12px}
+.quiz-name-row{display:flex;flex-direction:column;gap:9px;margin-bottom:12px}
+.quiz-name{font-size:14px;padding:10px 12px;min-height:44px;
+  background:var(--bg);color:var(--fg);border:1px solid var(--rule);border-radius:2px;
+  font-family:inherit;width:100%}
+.quiz-start{width:100%}
+
+.quiz-scorebar{display:flex;gap:8px;margin-bottom:12px}
+.quiz-score{flex:1;min-width:0;background:var(--card);border:1px solid var(--rule);
+  border-radius:3px;padding:9px 11px;text-align:center}
+.quiz-score.on{border-color:var(--kin);box-shadow:0 0 0 1px var(--kin) inset}
+.quiz-score-name{display:block;font-size:12.5px;font-weight:700;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.quiz-score-pt{display:block;font-size:15px;color:var(--accent);margin-top:2px}
+.quiz-progress{margin:0 0 10px;text-align:right;color:var(--gray)}
+
+.quiz-turn{display:inline-block;font-size:11px;letter-spacing:.1em;color:#fff;
+  background:var(--rokusho);padding:4px 10px;border-radius:12px;margin-bottom:9px;font-weight:700}
+.quiz-q{font-size:16px;line-height:1.6;font-weight:500;margin:0 0 13px}
+.quiz-choices{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+.quiz-choice{width:100%;text-align:left;font-size:14px;padding:12px 14px;min-height:48px;
+  white-space:normal;line-height:1.4}
+.quiz-choice.correct{background:var(--rokusho);border-color:var(--rokusho);color:#fff;font-weight:700}
+.quiz-choice.wrong{background:var(--miso);border-color:var(--miso);color:#fff;font-weight:700}
+.quiz-choice:disabled{opacity:1;cursor:default}
+.quiz-result{font-size:15px;font-weight:700;margin:0 0 8px}
+.quiz-result.ok{color:var(--rokusho)}
+.quiz-result.ng{color:var(--miso)}
+.quiz-source{font-size:13px;color:var(--fg);background:var(--bg);border:1px solid var(--rule);
+  border-radius:2px;padding:10px 12px;margin:0 0 13px;line-height:1.75}
+.quiz-next{width:100%}
+
+.quiz-final{text-align:center;padding:6px 0 4px}
+.quiz-final h3{font-size:15px;color:var(--gray);font-weight:500;margin-bottom:6px}
+.quiz-result-final{font-size:20px;font-weight:700;color:var(--kin);margin:0 0 14px}
+.quiz-final .btn{width:100%}
+
+.quiz-reset{width:100%;margin-top:14px;font-size:12.5px;color:var(--gray)}
+
+@media print{
+  .quiz-wrap{display:none !important}
 }

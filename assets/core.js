@@ -70,7 +70,8 @@
     { file: 'index.html', label: '行程' },
     { file: 'spots.html', label: '名所' },
     { file: 'gourmet.html', label: '名物' },
-    { file: 'tips.html', label: 'メモ' }
+    { file: 'tips.html', label: 'メモ' },
+    { file: 'play.html', label: 'あそび' }
   ];
 
   /* ---- テーマ。auto / light / dark の3状態を回す ---- */
