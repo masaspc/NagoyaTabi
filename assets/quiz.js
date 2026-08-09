@@ -72,7 +72,7 @@
     return ensureQuestion(save(s));
   };
 
-  NT.quizReset = function () { localStorage.removeItem('nt:quiz'); celebratedQuiz = false; };
+  NT.quizReset = function () { localStorage.removeItem('nt:quiz'); celebratedQuiz = false; lastCelebratedAnswer = null; };
 
   /* ---- UI ---- */
   /* Task 28: 得点は前回描画時の値からカウントアップする（lastScoresが唯一の情報源。
@@ -81,6 +81,7 @@
      quizResetでフラグを戻す） */
   var lastScores = null;
   var celebratedQuiz = false;
+  var lastCelebratedAnswer = null; /* 正解時バーストの多重発火防止（設問id） */
 
   function nameForm() {
     /* nt:players（core.js）が名前の唯一の情報源。名古屋めし総選挙や
@@ -151,12 +152,25 @@
     }
 
     var t = NT.trivia.filter(function (x) { return x.id === q.triviaId; })[0];
+    var correctBtn = null;
     body.push(NT.el('div', { class: 'quiz-choices' }, q.choices.map(function (c, idx) {
       var cls = 'btn quiz-choice';
       if (idx === q.answer) cls += ' correct';
       else if (idx === s.lastAnswer.choice) cls += ' wrong';
-      return NT.el('button', { class: cls, type: 'button', text: c, disabled: true });
+      var btn = NT.el('button', { class: cls, type: 'button', text: c, disabled: true });
+      if (idx === q.answer) correctBtn = btn;
+      return btn;
     })));
+    /* 正解したときだけ、正解の選択肢のまわりに小さな祝祭を1回出す（Task 29）。
+       設問idをキーに多重発火を防ぐ ―― 同じ正誤発表のままrenderPlayが
+       何度呼ばれても（他の操作の巻き添えの再描画等）、同じ設問に対して
+       2回は出さない。 */
+    if (s.lastAnswer.correct && correctBtn && s.currentId !== lastCelebratedAnswer) {
+      lastCelebratedAnswer = s.currentId;
+      if (w.NT.fx) requestAnimationFrame(function () {
+        NT.fx.burst(correctBtn, { count: 10 });
+      });
+    }
     body.push(NT.el('p', { class: 'quiz-result ' + (s.lastAnswer.correct ? 'ok' : 'ng'),
       text: s.lastAnswer.correct ? '正解！' : '不正解…' }));
     if (t) body.push(NT.el('p', { class: 'quiz-source', text: t.text }));

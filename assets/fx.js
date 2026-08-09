@@ -134,6 +134,36 @@
     scrollListenerBound = true;
     w.addEventListener('scroll', onScrollSettle, { passive: true });
   }
+
+  /* 閉じた<details>の中で「隠れたまま」opacity:0→1のCSSトランジションが起こると、
+     一部の環境では閉じている間スタイル計算そのものが省略され、後から.nt-inを
+     付けてもopacity:0のまま固まって二度と動かないことがある（実機検証で発見:
+     tips.html の土産セクション、閉じた節のさらに中の閉じたカードで再現。
+     BACKSTOP_MSのタイムアウトは働いて.nt-inは付くのに、詳細を開いても
+     opacity:0のまま——スクロールでは絶対に踏まない経路だが、「速いフリック」と
+     同種の"消えたまま"の不具合なので同じ基準で直す）。
+     <details>が開いた瞬間、その中の.nt-pending要素を演出を待たず即座に
+     最終状態へスナップし、この詰まりが起こる余地自体をなくす。ユーザーが
+     自分で開いた操作なので、スクロール発見用のふわっとしたフェードより
+     即時表示の方が体感としても自然。 */
+  function snapWithin(root) {
+    var els = root.querySelectorAll('.nt-pending');
+    for (var i = 0; i < els.length; i++) {
+      els[i].classList.add('nt-in');
+      els[i].classList.remove('nt-pending');
+    }
+  }
+  var detailsSnapBound = false;
+  function ensureDetailsSnapListener() {
+    if (detailsSnapBound) return;
+    detailsSnapBound = true;
+    /* 'toggle' はバブリングしないが、キャプチャフェーズは非バブリングのイベントでも
+       document まで届く。true(capture) を指定すれば <details> の数によらず1本で拾える。 */
+    document.addEventListener('toggle', function (e) {
+      var t = e.target;
+      if (t && t.tagName === 'DETAILS' && t.open) snapWithin(t);
+    }, true);
+  }
   function variantClass(el) {
     if (el.classList.contains('tl-item')) return 'nt-reveal-tl';
     if (el.classList.contains('sec-head')) return 'nt-reveal-wipe';
@@ -363,6 +393,37 @@
     play: { kind: 'kinshachi', pattern: 'seigaiha' }
   };
   var themedArt = []; /* {el, opts} — テーマが変わったら焼き直すパターン背景の一覧 */
+
+  /* ===================================================================
+     6.1 ヘッダー装飾のパララックス（Task 29）。.page-head は sticky ではなく
+     本文と一緒に普通にスクロールで流れていく。その通過中だけ、装飾層
+     （模様+線画/金鯱）を本文よりわずかに遅く動かして奥行きを出す。
+     transformのみ・rAFで1フレーム1回に間引く・reduced-motionでは
+     一切書き込まない（この層は常にtranslateY(0)のまま静止＝動きが
+     完全に止まる。「短くする」ではなく「止める」という他の演出と同じ方針）。 */
+  var parallaxEl = null, parallaxHead = null, parallaxRafPending = false;
+  function applyParallax() {
+    parallaxRafPending = false;
+    if (!parallaxEl || !parallaxHead) return;
+    var rect = parallaxHead.getBoundingClientRect();
+    if (rect.bottom <= 0 || rect.top >= w.innerHeight) return; /* 画面外。計算しない */
+    var progress = Math.max(0, -rect.top);
+    var y = Math.min(progress * 0.3, rect.height * 0.6);
+    parallaxEl.style.transform = 'translateY(' + y.toFixed(1) + 'px)';
+  }
+  function onParallaxScroll() {
+    if (parallaxRafPending) return;
+    parallaxRafPending = true;
+    requestAnimationFrame(applyParallax);
+  }
+  function ensureParallax(art, head) {
+    if (fx.reducedMotion || parallaxEl) return; /* ページにつき1本のヘッダーだけが対象 */
+    parallaxEl = art;
+    parallaxHead = head;
+    w.addEventListener('scroll', onParallaxScroll, { passive: true });
+    applyParallax();
+  }
+
   function buildPatternLayer(name) {
     var pat = NT.artPattern(name, { size: 20, opacity: 0.14 });
     var d = document.createElement('div');
@@ -397,6 +458,7 @@
     head.insertBefore(art, head.firstChild);
     fx.shimmer(head);
     fx.drawIn(svg, { duration: 1100, stagger: 90 });
+    ensureParallax(art, head);
   };
   function refreshThemedArt() {
     themedArt.forEach(function (t) {
@@ -415,6 +477,7 @@
 
     var roots = NT.$$('[id$="-root"]');
     roots.forEach(watchRoot);
+    ensureDetailsSnapListener();
     /* IntersectionObserver の最初のコールバックは仕様上「非同期のいつか」で、
        環境によっては初回ペイントの直後に来ない（実測、ヘッドレス環境で顕著）。
        登録した直後に一度だけ実測チェックを走らせ、初期表示ですでに画面内にある

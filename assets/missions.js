@@ -25,6 +25,21 @@
 
   NT.resetMissions = function () { localStorage.removeItem('nt:missions'); };
 
+  /* 直近に描画したカードの id（Task 29: 「引く」の瞬間だけカードをフリップ
+     させるため）。build() は「達成/失敗を記録する」「デッキをリセットする」等、
+     引いたカードそのものは変わらない操作でも毎回呼ばれ、そのたびに
+     missionCard() は新しいDOM要素を作り直す（このファイル・fx.js共通の設計:
+     状態が変わるたびにコンテナごと再構築する）。そのため「要素が新しく
+     作られたこと」自体は「今まさに引いた」の合図にならない —— 見ている
+     ミッションのidが前回の描画から変わったときだけをフリップの合図にする。
+     ページ読み込み時点の値で種入れしておくことで、前回セッションからの
+     続きを開いた瞬間には誤ってフリップしない（本当に「引く」を押した
+     ときだけ動く）。 */
+  var lastDrawnCardId = (function () {
+    var s0 = NT.missionsState();
+    return s0.drawn.length ? s0.drawn[s0.drawn.length - 1] : null;
+  })();
+
   /* 未出題の中から1枚選んで drawn の末尾に積む。尽きていれば null を返す
      （trivia ガチャの NT.drawTrivia と同じ契約）。 */
   NT.drawMission = function () {
@@ -83,12 +98,18 @@
     } else {
       actions = NT.el('p', { class: 'mission-result pending', text: '未判定' });
     }
-    return NT.el('div', { class: 'card mission-card' }, [
+    var card = NT.el('div', { class: 'card mission-card' }, [
       NT.el('span', { class: 'badge kin', text: m.cat }),
       NT.el('p', { class: 'mission-text', text: m.text }),
       spot ? NT.el('a', { class: 'mission-spot-link', href: '#spot-' + spot.id, text: '→ ' + spot.name }) : null,
       actions
     ]);
+    /* fx.js の汎用スクロール登場演出（.card は REVEAL_SELECTOR に含まれる）は
+       ここでは使わない。入場演出はbuild()側の「引いた瞬間だけのフリップ」が
+       専任で担当するため、先に data-nt-r を立てて汎用スキャンの二重登録を防ぐ
+       （常に即表示＝コンテンツが消えるモードには絶対に落ちない）。 */
+    card.setAttribute('data-nt-r', '1');
+    return card;
   }
 
   function history(s) {
@@ -126,8 +147,11 @@
       tally(s)
     ];
 
-    if (cur) box.push(missionCard(cur, s, true));
+    var mc = null;
+    if (cur) { mc = missionCard(cur, s, true); box.push(mc); }
     else box.push(NT.el('p', { class: 'notice', text: 'まだ1枚も引いていません。下のボタンで最初の1枚を引く。' }));
+    var freshDraw = !!curId && curId !== lastDrawnCardId;
+    lastDrawnCardId = curId;
 
     box.push(NT.el('div', { class: 'btnrow' }, [
       NT.el('button', {
@@ -151,6 +175,23 @@
 
     var hist = history(s);
     if (hist) wrapDiv.appendChild(hist);
+
+    /* 「引く」の瞬間だけ、カードを配るようにフリップさせる（Task 29）。
+       呼び出し元（playpage.js の NT.renderPlay）がこの戻り値を同期的に
+       appendChild するので、次のフレームまで待ってから animate すれば
+       要素は確実にDOMへ接続済み。transform/opacityのみのWeb Animations API
+       で、CSSのreveal系（.nt-reveal等）とは競合しない
+       （mission-cardはdata-nt-rを立てて汎用revealの対象から外している）。 */
+    if (freshDraw && mc && w.NT.fx && !NT.fx.reducedMotion) {
+      requestAnimationFrame(function () {
+        mc.style.transformOrigin = 'center 25%';
+        mc.animate([
+          { transform: 'rotateX(-84deg) scale(.94)', opacity: 0 },
+          { transform: 'rotateX(8deg) scale(1.015)', opacity: 1, offset: .72 },
+          { transform: 'rotateX(0deg) scale(1)', opacity: 1 }
+        ], { duration: 520, easing: 'cubic-bezier(.25,.7,.3,1)' });
+      });
+    }
 
     return wrapDiv;
   }
