@@ -41,20 +41,37 @@
   function renderItem(day, di, item, ii, plan) {
     var key = NT.itemKey(di, ii);
     var cls = 'tl-item k-' + item.kind + (item.hero ? ' has-hero' : '');
+    /* 名所線画（Task 29）。行程の目玉コマ（味処叶・熱田神宮・ポケモンセンター・
+       大須・名古屋城・伍味酉・徳川美術館・まるや本店・住よし）は、対応する
+       spotId から core.js の NT.LANDMARK_FOR_SPOT を引いて絵入りにする。
+       drawInの配線はfx.jsのscanArtが自動でやる。
+       サイズは art.js の想定（80〜120px表示）に合わせて52pxを確保する
+       ——最初、文字列の頭に18〜30px級の小さなグリフとして埋め込んだところ、
+       実機スクリーンショットで線画が単なる短い引っかき傷にしか見えず、
+       何の絵かまったく判読できなかった（実測して気づいた不具合）。
+       文中インラインをやめ、テキスト列と並ぶ専用のサムネイル列に描き直した。 */
+    var landKey = item.spotId && NT.LANDMARK_FOR_SPOT && NT.LANDMARK_FOR_SPOT[item.spotId];
+    var landIco = landKey && NT.artLandmark
+      ? NT.artLandmark(landKey, { size: 52, color: 'var(--accent)' }) : null;
+    if (landIco) landIco.classList.add('tl-land-ico');
+    var textCol = NT.el('div', { class: 'tl-body-text' }, [
+      NT.el('strong', {}, [
+        item.title,
+        item.hero ? NT.el('span', { class: 'hero-tag', text: item.hero }) : null
+      ]),
+      item.note ? NT.el('span', { class: 'tl-note', text: item.note }) : null,
+      item.hardDeadline
+        ? NT.el('span', { class: 'tl-deadline mono',
+            text: '⏱ ' + item.hardDeadline + ' ' + (item.deadlineWhy || '') })
+        : null,
+      spotLink(item)
+    ]);
+    var bodyKids = landIco
+      ? [NT.el('div', { class: 'tl-body-flex' }, [textCol, landIco])]
+      : [textCol];
     var li = NT.el('li', { class: cls, 'data-key': key, id: 'item-' + key }, [
       NT.el('span', { class: 'tl-time mono', text: item.time }),
-      NT.el('div', { class: 'tl-body' }, [
-        NT.el('strong', {}, [
-          item.title,
-          item.hero ? NT.el('span', { class: 'hero-tag', text: item.hero }) : null
-        ]),
-        item.note ? NT.el('span', { class: 'tl-note', text: item.note }) : null,
-        item.hardDeadline
-          ? NT.el('span', { class: 'tl-deadline mono',
-              text: '⏱ ' + item.hardDeadline + ' ' + (item.deadlineWhy || '') })
-          : null,
-        spotLink(item)
-      ])
+      NT.el('div', { class: 'tl-body' }, bodyKids)
     ]);
     var ctx = { dayIndex: di, itemIndex: ii, day: day, plan: plan, key: key };
     NT.itemDecorators.forEach(function (fn) { fn(li, item, ctx); });

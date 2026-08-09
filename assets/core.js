@@ -132,4 +132,41 @@
   NT.notice = function (host, text, kind) {
     host.appendChild(NT.el('p', { class: 'notice' + (kind ? ' ' + kind : ''), text: text }));
   };
+
+  /* ---- 名所線画（assets/art.js の10種）を、行程・名所・名物のどのカードに
+     使うかの対応表（Task 29）。art.js 自体はデータの id を一切知らないので、
+     ここでページ側が「どの id にどの絵を当てるか」を1箇所にまとめる。
+     10種の線画すべてに最低1つの行き先を割り当てることを狙った:
+       nagoyajo/atsuta/osu/tokugawa は名前どおりの直接一致。
+       hitsumabushi は「まるや本店」（ひつまぶしの実演店）、
+       misokatsu は「味処 叶」（味噌カツ発祥を名乗る元祖）に、料理の絵をその店に当てる。
+       shinkansen は新幹線ホーム上の「住よし」（きしめん）に当てる。
+       tebasaki は「伍味酉」（名古屋コーチン）と食品データの手羽先の両方に使う——
+       専用の「コーチン」線画は無いため、鳥料理という近い家族の絵を転用する
+       （精密な一致ではないが、10種のうち転用できる候補としては最も近い）。
+       kissa は「コンパル」系の喫茶スポットと、食品データの「喫茶店のモーニング」に。
+       chikagai（地下街・駅）は「エスカ地下街」に直接一致し、
+       駅至近の「ポケモンセンターナゴヤ」にも同じ絵を転用する。 */
+  NT.LANDMARK_FOR_SPOT = {
+    kanou: 'misokatsu',
+    atsuta: 'atsuta',
+    osu: 'osu',
+    nagoyajo: 'nagoyajo',
+    tokugawa: 'tokugawa',
+    'maruya-esca': 'hitsumabushi',
+    sumiyoshi: 'shinkansen',
+    gomitori: 'tebasaki',
+    pokecen: 'chikagai',
+    esca: 'chikagai',
+    'konparu-meieki': 'kissa',
+    'kissa-tanaka': 'kissa'
+  };
+  NT.LANDMARK_FOR_FOOD = {
+    hitsumabushi: 'hitsumabushi',
+    misokatsu: 'misokatsu',
+    kochin: 'tebasaki',
+    morning: 'kissa',
+    kishimen: 'shinkansen',
+    tebasaki: 'tebasaki'
+  };
 })(window);

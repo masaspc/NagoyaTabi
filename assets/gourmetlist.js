@@ -44,12 +44,21 @@
      名称・五食バッジ・カテゴリ・価格帯。詳細（何が名古屋なのか・食べ方・店・豆知識）は開いたときだけ */
   function card(f) {
     var isOpen = !!openIds[f.id];
+    /* 分類グリフ + 色（Task 29）。spotlist.js と同じ考え方: 20品の一覧を
+       「形と色」で見分けられるように、折りたたみ時のsummaryにも常に出す。 */
+    var catColor = NT.artCategoryColor ? NT.artCategoryColor(f.cat) : null;
+    var catIcon = NT.artIcon ? NT.artIcon(f.cat, { size: 20 }) : null;
+    if (catIcon) {
+      catIcon.classList.add('cat-ico');
+      if (catColor) catIcon.style.color = catColor;
+    }
     /* 食べたトグル（record.js が差し込む）の置き場を空けるため、価格は
        summary の2行目（summeta）へ回す。1行目は chevron + 名前 + トグルだけにして、
        折りたたみ時に押しやすい列を保つ */
     var summary = NT.el('summary', {}, [
       NT.el('div', { class: 'spot-head' }, [
         NT.el('span', { class: 'chev', 'aria-hidden': 'true' }),
+        catIcon,
         NT.el('h3', {}, [f.name,
           f.slot ? NT.el('span', { class: 'badge kin', text: '五食' }) : null])
       ]),
@@ -59,8 +68,21 @@
       ])
     ]);
 
+    /* 名所線画（Task 29）。core.js の NT.LANDMARK_FOR_FOOD に対応がある品だけ、
+       開いたときに絵を出す。drawInの配線はfx.jsのscanArtが自動でやる
+       （spotlist.js と同じ仕組み）。 */
+    var landmarkKey = NT.LANDMARK_FOR_FOOD && NT.LANDMARK_FOR_FOOD[f.id];
+    var landmarkArt = landmarkKey && NT.artLandmark
+      ? NT.artLandmark(landmarkKey, { size: 64, color: 'var(--accent)' }) : null;
+    var whatRow = landmarkArt
+      ? NT.el('div', { class: 'body-top' }, [
+          NT.el('p', { class: 'food-what', text: f.what }),
+          NT.el('div', { class: 'card-landmark', 'aria-hidden': 'true' }, [landmarkArt])
+        ])
+      : NT.el('p', { class: 'food-what', text: f.what });
+
     var body = NT.el('div', { class: 'food-body' }, [
-      NT.el('p', { class: 'food-what', text: f.what }),
+      whatRow,
       NT.el('h4', { text: 'なぜ名古屋なのか' }),
       NT.el('p', { class: 'food-why', text: f.why }),
       f.howto && f.howto.length ? NT.el('h4', { text: '食べ方' }) : null,

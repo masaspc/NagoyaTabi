@@ -72,11 +72,25 @@
    必ず min-height:44px を明示すること（見た目は詰めても構わないが、
    タップ領域は詰めない）。 */
 button,select,.btn,a.btn{min-height:44px}
+/* summaryは<details>の開閉トグルとして事実上ボタンだが.btnクラスは持たない
+   （spot/food/om/tips-det/mission-history/map-detの全カード共通）。押した
+   ときの手応えをここで一括して足す（Task 29）。opacityのみ・レイアウトに
+   触れない */
+summary{-webkit-tap-highlight-color:transparent}
+summary:active{opacity:.78}
+.badge{transition:transform .15s ease}
 html{-webkit-text-size-adjust:100%}
 body{margin:0;background:var(--bg);color:var(--fg);position:relative;
   font-family:var(--font-sans);
   font-size:15px;line-height:1.75;overflow-x:hidden}
 h1,h2,h3{font-family:var(--font-serif);font-weight:700;letter-spacing:.02em;margin:0}
+/* 日本語の見出しが単語の途中（例:「組」と「む」の間）で改行されるのを防ぐ（Task 29 実測で
+   index.html の h1 が390px幅で「…五食で組」／「む。」に割れる不具合を発見して追加）。
+   文節ごとに<span class="jword">で包み、切ってよい位置にだけ<wbr>を明示する。
+   word-break:keep-allを見出し全体にかける方式は採らない —— 文中に実スペースが
+   1箇所しかないと、そこ以外で改行できなくなり狭い幅でむしろ大きくはみ出す
+   （実測して確認）。文節単位のnowrapなら、はみ出しなく・単語の途中でも割れない。 */
+.jword{white-space:nowrap}
 a{color:var(--accent)}
 .wrap{max-width:920px;margin:0 auto;padding:0 18px}
 .mono{font-family:var(--font-mono)}
@@ -131,10 +145,23 @@ header[data-nav]{
 /* ヘッダーの装飾層（Task 28, assets/fx.js が組み立てる）。名所の線画 or 金鯱 +
    麻の葉/青海波の透かしパターン。z-index:0、テキストより後ろに固定し、
    pointer-events:none で操作の邪魔をしない。 */
-.page-head-art{position:absolute;inset:0;z-index:0;pointer-events:none}
+/* パララックス（Task 29）。fx.js がスクロールに合わせて transform:translateY(...) を
+   直接styleへ書き込む（rAFで1フレーム1回に間引き、prefers-reduced-motionでは
+   一切書き込まない＝この層は常にtranslateY(0)のまま静止）。will-changeで
+   コンポジタ層に昇格させ、スクロール中の再描画コストを抑える。 */
+.page-head-art{position:absolute;inset:0;z-index:0;pointer-events:none;will-change:transform}
 .page-head-pattern{position:absolute;inset:0;background-repeat:repeat}
 .page-head-glyph{position:absolute;right:-8px;bottom:-6px;
   color:var(--kin-light);line-height:0}
+/* Task 29 実測で発見・修正: fx.headerArt が .page-head-glyph に .nt-shimmer も
+   付けるため、詳細度が同じ（クラス1つずつ）の .nt-shimmer{position:relative}
+   （演出層セクション、このファイルのこれより後方）とカスケードで衝突し、
+   後方のnt-shimmer側が勝って position:absolute が丸ごと無効化されていた。
+   結果、絵がヘッダー右下の小さな正方形に収まらず、通常フローの
+   横幅いっぱいの帯として左上（テキストの先頭）に流れ込み、eyebrow行と
+   重なっていた（tips.html・play.htmlのようにヘッダーが低いページで顕著。
+   実機スクリーンショットで発見）。2クラス指定にして詳細度で明示的に勝たせる。 */
+.page-head-glyph.nt-shimmer{position:absolute}
 /* 不透明度は低め（Task 28 実測で調整）。タイトルが短いページ（実用メモ／あそび）は
    ヘッダー自体が低く、絵がeyebrow・h1のどこかと必ず少し重なる（帯で守れるのは
    h1/sub止まり）。テキストは別レイヤーで絵の「上」に不透明で描かれるため
@@ -167,9 +194,13 @@ section{padding:30px 0}
 .btnrow{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:14px}
 .btn{background:var(--card);border:1px solid var(--rule);color:var(--fg);
   font-size:13px;padding:9px 13px;border-radius:2px;cursor:pointer;min-height:44px;
-  font-family:inherit}
+  font-family:inherit;transition:transform .12s ease}
 .btn.on{background:var(--rokusho);border-color:var(--rokusho);color:#fff;font-weight:700}
 .btn:disabled{opacity:.5;cursor:default}
+/* 押した手応え（Task 29）。transformのみ・タップ領域の実測サイズには触れない
+   （translateY(14px)と同じ理由でscaleは避け、1px沈める程度に留める）。
+   reduced-motionでも1回きりの短い遷移なので止めない（連続アニメーションではない）。 */
+.btn:not(:disabled):active{transform:translateY(1px)}
 
 .table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;
   border:1px solid var(--rule);border-radius:3px;background:var(--card)}
@@ -269,6 +300,14 @@ footer{background:var(--head-bg);color:var(--head-sub);padding:24px 0;font-size:
 .tl-body::before{content:"";position:absolute;left:-5px;top:7px;width:9px;height:9px;
   border-radius:50%;background:var(--card);border:1.5px solid var(--rule);z-index:1}
 .tl-body strong{display:block;font-size:14.5px;line-height:1.5}
+/* 行程の目玉コマの名所線画（Task 29）。core.js の NT.LANDMARK_FOR_SPOT に対応が
+   あるコマだけ、テキスト列と並ぶ専用のサムネイル列に出す。art.jsの想定
+   （80〜120px表示）に近い52pxを確保しないと、線画が判読できない
+   短い引っかき傷にしか見えない（実測して気づいた不具合。詳細はitinerary.js
+   のコメント参照）。 */
+.tl-body-flex{display:flex;gap:10px;align-items:flex-start;justify-content:space-between}
+.tl-body-text{flex:1;min-width:0}
+.tl-land-ico{flex:none;color:var(--accent);opacity:.92;margin-top:2px}
 .tl-note{display:block;font-size:12.5px;color:var(--gray);margin-top:3px}
 .tl-deadline{display:block;font-size:11.5px;color:var(--miso);margin-top:4px}
 .tl-links{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:6px;font-size:12px}
@@ -297,9 +336,23 @@ footer{background:var(--head-bg);color:var(--head-sub);padding:24px 0;font-size:
 .clock-bar{display:flex;align-items:center;gap:9px;margin-top:11px;
   padding-top:10px;border-top:1px solid rgba(199,154,60,.3);font-size:11.5px;color:var(--head-sub)}
 .clock-bar select{max-width:200px;font-size:12px;padding:6px 8px}
-.tl-item.is-now .tl-body{outline:2px solid var(--kin);outline-offset:3px;border-radius:2px}
+.tl-item.is-now .tl-body{outline:2px solid var(--kin);outline-offset:3px;border-radius:2px;position:relative}
 .tl-item.is-now .tl-body strong{color:var(--kin)}
 .tl-item.is-past{opacity:.5}
+/* 今のコマの脈動リング（Task 29）。点の位置に重ねた輪が広がって消えるのを
+   繰り返す。ページ内に「今」は同時に1件しかないので、常時ループでも
+   バッテリー影響は無視できる範囲（transform/opacityのみ、layout非関与）。
+   reduced-motionでは下の@mediaの外なので最初から静止＝outlineの強調だけで
+   十分「今ここ」と分かる。 */
+@media (prefers-reduced-motion:no-preference){
+  .tl-item.is-now .tl-body::after{content:"";position:absolute;left:-5px;top:7px;
+    width:9px;height:9px;border-radius:50%;border:1.5px solid var(--kin);
+    animation:nt-now-pulse 2.2s ease-out infinite}
+  @keyframes nt-now-pulse{
+    0%{transform:scale(1);opacity:.85}
+    100%{transform:scale(2.8);opacity:0}
+  }
+}
 
 .rec{background:var(--card);border:1px solid var(--miso);border-left:4px solid var(--miso);
   border-radius:3px;padding:13px 15px;margin:10px 0 4px}
@@ -334,6 +387,11 @@ footer{background:var(--head-bg);color:var(--head-sub);padding:24px 0;font-size:
 .spot > summary::-webkit-details-marker{display:none}
 .spot > summary::marker{content:''}
 .spot-head{display:flex;align-items:center;gap:7px}
+/* 分類グリフ（Task 29）。30件の名所・20品の名物が折りたたみ一覧でも
+   「形と色」で見分けられるようにする。色は art.js の artCategoryColor が返す
+   var(--cat-xxx)（14分類ぶん、light/darkとも--bg/--cardに4.5:1以上、
+   task-27-report.md に算出根拠あり）。 */
+.spot-head .cat-ico{flex:none;line-height:0}
 .spot-head .chev{flex:none;font-size:11px;line-height:1.55;color:var(--accent);
   transition:transform .15s ease}
 .spot-head .chev::before{content:'▸'}
@@ -354,6 +412,13 @@ footer{background:var(--head-bg);color:var(--head-sub);padding:24px 0;font-size:
 .spot-meta{display:grid;grid-template-columns:52px 1fr;gap:2px 10px;margin:11px 0 0;font-size:12.5px}
 .spot-meta dt{color:var(--gray)}
 .spot-meta dd{margin:0}
+/* 名所線画（Task 29）。行程の目玉と重なる名所・名物カードだけ、開いたときに
+   本文の右肩に絵を出す。core.js の NT.LANDMARK_FOR_SPOT/FOR_FOOD に対応が
+   ある品だけ描かれる（対応がなければ .card-landmark 自体が存在しない）。
+   線画はfx.jsのdrawIn（一筆で描かれる演出）が自動で付く。 */
+.body-top{display:flex;gap:14px;align-items:flex-start;justify-content:space-between}
+.body-top>:first-child{flex:1;min-width:0}
+.card-landmark{flex:none;color:var(--accent);opacity:.92}
 .spot-body h4{font-family:var(--font-serif);font-size:13px;color:var(--accent);
   margin:14px 0 4px}
 .triv{margin:0;padding-left:19px;font-size:13px}
@@ -575,6 +640,11 @@ section.tight{padding-top:0}
      nt-in の有無に関わらず必ず全部見える状態へ強制的に戻す。 */
   .nt-grain, .page-head-art, .nt-burst-host{ display:none !important; }
   .nt-shimmer::after{ display:none !important; }
+  /* 装飾の線画・グリフも紙では消す（Task 29）。「印刷は効果なしの黒白1色」の
+     対象はTask 28のエフェクト層だけでなく、これらの装飾アートにも及ぶ。
+     消しても内容（店名・分類名などのテキスト）は別要素にそのまま残る。 */
+  .cat-ico, .card-landmark, .tl-land-ico{ display:none !important; }
+  .tl-item.is-now .tl-body::after{ display:none !important; }
   .card{ background-image:none !important; }
   .nt-reveal, .nt-reveal-tl, .nt-reveal-wipe{ opacity:1 !important; transform:none !important; }
   .nt-reveal-wipe::after{ transform:scaleX(1) !important; display:none !important; }
@@ -674,6 +744,23 @@ section.tight{padding-top:0}
 .quiz-choice.correct{background:var(--rokusho);border-color:var(--rokusho);color:#fff;font-weight:700}
 .quiz-choice.wrong{background:var(--miso);border-color:var(--miso);color:#fff;font-weight:700}
 .quiz-choice:disabled{opacity:1;cursor:default}
+/* 正解・不正解で「感触」を変える（Task 29）。要素は正誤発表のたびに作り直される
+   ため、animationは付与時に必ず最初から再生される（CSS transitionと違い、
+   生成時点でクラスが付いていても自動的に走る）。1回きり（iteration既定=1）で
+   ループしない。reduced-motionの外に置くので、そちらでは色の変化だけで発表する。 */
+@media (prefers-reduced-motion:no-preference){
+  .quiz-choice.correct{animation:nt-quiz-correct .5s ease}
+  .quiz-choice.wrong{animation:nt-quiz-wrong .45s ease}
+  @keyframes nt-quiz-correct{
+    0%{transform:scale(1)} 40%{transform:scale(1.045)}
+    70%{transform:scale(.985)} 100%{transform:scale(1)}
+  }
+  @keyframes nt-quiz-wrong{
+    0%,100%{transform:translateX(0)}
+    20%{transform:translateX(-7px)} 40%{transform:translateX(6px)}
+    60%{transform:translateX(-4px)} 80%{transform:translateX(2px)}
+  }
+}
 .quiz-result{font-size:15px;font-weight:700;margin:0 0 8px}
 .quiz-result.ok{color:var(--rokusho)}
 .quiz-result.ng{color:var(--miso)}
@@ -748,8 +835,10 @@ section.tight{padding-top:0}
 .rate-stars{display:flex;gap:4px;flex-wrap:wrap}
 .rate-star{width:44px;min-height:44px;padding:0;font-size:19px;line-height:1;
   display:inline-flex;align-items:center;justify-content:center;
-  background:var(--bg);border:1px solid var(--rule);border-radius:2px;color:var(--kin);cursor:pointer}
+  background:var(--bg);border:1px solid var(--rule);border-radius:2px;color:var(--kin);cursor:pointer;
+  transition:transform .12s ease}
 .rate-star.on{background:rgba(199,154,60,.14);border-color:var(--kin)}
+.rate-star:active{transform:translateY(1px) scale(.93)}
 
 @media print{
   .rate{display:none !important}

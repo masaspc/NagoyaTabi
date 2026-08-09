@@ -51,8 +51,19 @@
         NT.renderSpots();
       }
     });
+    /* 分類グリフ + 色（Task 29）。30件の一覧を「形と色」で見分けられるように、
+       折りたたみ時のsummaryにも常に出す。artIcon/artCategoryColorは
+       art.js（Task 27）の既存API — 未知分類でも汎用グリフを返すだけで
+       表示は壊さない。 */
+    var catColor = NT.artCategoryColor ? NT.artCategoryColor(s.category) : null;
+    var catIcon = NT.artIcon ? NT.artIcon(s.category, { size: 20 }) : null;
+    if (catIcon) {
+      catIcon.classList.add('cat-ico');
+      if (catColor) catIcon.style.color = catColor;
+    }
     var head = NT.el('div', { class: 'spot-head' }, [
       NT.el('span', { class: 'chev', 'aria-hidden': 'true' }),
+      catIcon,
       NT.el('h3', {}, [s.name].concat(badges(s))),
       visBtn
     ]);
@@ -73,8 +84,20 @@
       row('目安', s.stay + '分'),
       dist !== null ? row('距離', dist.toFixed(1) + ' km') : []
     ));
+    /* 名所線画（Task 29）。core.js の NT.LANDMARK_FOR_SPOT に対応があるカードだけ、
+       開いたときに絵を出す。fx.js の scanArt が #spots-root の変化を監視していて、
+       このsvgが挿さった瞬間に自動でdrawIn（一筆で描かれる演出）を配線する
+       ——ここで個別にdrawInを呼ぶ必要はない。 */
+    var landmarkKey = NT.LANDMARK_FOR_SPOT && NT.LANDMARK_FOR_SPOT[s.id];
+    var landmarkArt = landmarkKey && NT.artLandmark
+      ? NT.artLandmark(landmarkKey, { size: 64, color: 'var(--accent)' }) : null;
+    var bodyTop = landmarkArt
+      ? NT.el('div', { class: 'body-top' }, [
+          meta, NT.el('div', { class: 'card-landmark', 'aria-hidden': 'true' }, [landmarkArt])
+        ])
+      : meta;
     var body = NT.el('div', { class: 'spot-body' }, [
-      meta,
+      bodyTop,
       s.highlight ? NT.el('div', { class: 'spot-highlight' }, [
         NT.el('span', { class: 'spot-highlight-label', text: 'ここだけは見る' }),
         NT.el('p', { class: 'spot-highlight-text', text: s.highlight })
