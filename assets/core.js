@@ -19,6 +19,24 @@
     }
   };
 
+  /* ---- 二人のプレイヤー名（nt:players）----
+     豆知識対戦クイズ（quiz.js）・名古屋めし総選挙（foodrank.js）・
+     立替割り勘（expenses.js）はどれも「同じふたり」を扱う。quiz.js は元々
+     対戦の名前を nt:quiz.players（状態オブジェクトの一部）に持っていたが、
+     それは対戦の進行状況（得点・出題済み設問）と一体になっており、他機能が
+     名前だけを読みに行く先としては不向き。ここに名前だけを持つ最小の
+     取得・保存関数を置き、3機能はここを唯一の情報源として読み書きする
+     （quiz.js は開始時にここへ書き戻す形で追従させてある）。 */
+  NT.players = function () {
+    var p = NT.get('players', null);
+    return (p && p.length === 2) ? p : ['プレイヤー1', 'プレイヤー2'];
+  };
+  NT.setPlayers = function (n1, n2) {
+    var p = [(n1 || '').trim() || 'プレイヤー1', (n2 || '').trim() || 'プレイヤー2'];
+    NT.set('players', p);
+    return p;
+  };
+
   /* ---- 時刻源。デモ時刻を全機能に効かせるため、直に new Date() を呼ばせない ---- */
   NT.now = function () {
     var iso = NT.get('clock', null);

@@ -77,20 +77,26 @@
   /* ---- UI ---- */
 
   function nameForm() {
+    /* nt:players（core.js）が名前の唯一の情報源。名古屋めし総選挙や
+       割り勘記録で先に名前を決めていれば、ここにも引き継がれる。
+       まだ誰も決めていない既定値（'プレイヤー1'/'プレイヤー2'）のときは
+       空欄のままプレースホルダーで見せる（決め打ちの文字列を消させない） */
+    var cur = NT.players();
     var i1 = NT.el('input', {
       type: 'text', class: 'quiz-name', placeholder: 'プレイヤー1の名前',
-      'aria-label': 'プレイヤー1の名前', maxlength: '12'
+      'aria-label': 'プレイヤー1の名前', maxlength: '12',
+      value: cur[0] === 'プレイヤー1' ? '' : cur[0]
     });
     var i2 = NT.el('input', {
       type: 'text', class: 'quiz-name', placeholder: 'プレイヤー2の名前',
-      'aria-label': 'プレイヤー2の名前', maxlength: '12'
+      'aria-label': 'プレイヤー2の名前', maxlength: '12',
+      value: cur[1] === 'プレイヤー2' ? '' : cur[1]
     });
     var goBtn = NT.el('button', {
       class: 'btn on quiz-start', type: 'button', text: 'はじめる',
       onclick: function () {
-        var n1 = i1.value.trim() || 'プレイヤー1';
-        var n2 = i2.value.trim() || 'プレイヤー2';
-        NT.quizStart(n1, n2);
+        var p = NT.setPlayers(i1.value, i2.value);
+        NT.quizStart(p[0], p[1]);
         NT.renderPlay();
       }
     });

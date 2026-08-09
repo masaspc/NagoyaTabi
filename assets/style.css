@@ -569,3 +569,51 @@ section.tight{padding-top:0}
 @media print{
   .mission-tally, .mission-card, .mission-history{display:none !important}
 }
+
+/* 名物カードの採点欄（Task 24）。summary には平均点の短いバッジだけ、
+   本文（.rate）には星ボタンをふたり分の2行で置く。星は生の <button> なので
+   全体ルール（button,select,.btn,a.btn{min-height:44px}）で高さは既に44px
+   以上あるが、幅も詰めた正方形に近いタップ領域にするためここで明示する。 */
+.rate-badge{font-size:10.5px;color:var(--accent);font-weight:700}
+.rate-badge.pending{color:var(--gray);font-weight:500}
+.rate{margin-top:13px;padding-top:11px;border-top:1px solid var(--rule)}
+.rate h4{font-family:"Shippori Mincho B1",serif;font-size:13px;color:var(--accent);margin:0 0 8px}
+.rate-row{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:8px}
+.rate-row:last-child{margin-bottom:0}
+.rate-player{flex:0 0 68px;font-size:12.5px;color:var(--gray);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rate-stars{display:flex;gap:4px;flex-wrap:wrap}
+.rate-star{width:42px;min-height:44px;padding:0;font-size:19px;line-height:1;
+  display:inline-flex;align-items:center;justify-content:center;
+  background:var(--bg);border:1px solid var(--rule);border-radius:2px;color:var(--kin);cursor:pointer}
+.rate-star.on{background:rgba(199,154,60,.14);border-color:var(--kin)}
+
+@media print{
+  .rate{display:none !important}
+}
+
+/* あそびページ: 名古屋めし総選挙（Task 24）。合計点が高い順の番付 +
+   「一番もめた1品」= 両者が採点済みの中で差が最大の1品。差の大小そのものが
+   コンテンツなので、番付の各行にも二人ぶんの点をそのまま並べて見せる
+   （平均だけに丸めると、揉めた事実が数字から消えてしまう）。 */
+.rank-names{margin-bottom:14px}
+.rank-list{list-style:none;margin:0 0 14px;padding:0}
+.rank-item{display:flex;gap:11px;align-items:baseline;padding:11px 0;border-top:1px dotted var(--rule)}
+.rank-item:first-child{border-top:none}
+.rank-no{flex:none;width:20px;font-size:14px;color:var(--gray)}
+.rank-item.top .rank-no{color:var(--kin);font-weight:700}
+.rank-body{flex:1;min-width:0}
+.rank-name{display:block;font-size:14.5px;font-weight:700;color:var(--fg);text-decoration:none}
+.rank-item.top .rank-name{color:var(--kin)}
+.rank-scores{display:flex;flex-wrap:wrap;gap:2px 10px;margin-top:3px;font-size:11.5px;color:var(--gray)}
+.rank-combined{color:var(--accent);font-weight:700}
+
+.rank-dispute{border-color:var(--miso)}
+.rank-dispute.agree{border-color:var(--rokusho)}
+.rank-dispute-label{font-size:10.5px;letter-spacing:.14em;color:var(--miso);font-weight:700;margin-bottom:4px}
+.rank-dispute.agree .rank-dispute-label{color:var(--rokusho)}
+.rank-dispute-text{margin:0;font-size:13.5px;line-height:1.7}
+.rank-dispute-scores{margin:8px 0 0;font-size:13px;color:var(--fg)}
+
+@media print{
+  .rank-names{display:none !important}
+}
