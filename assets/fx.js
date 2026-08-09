@@ -72,16 +72,67 @@
     '.rec,.now-bar,.sec-head,.mission-history,.rate';
   var revealCounter = 0;
   var revealIO = null;
+  var revealIOFailed = false; /* IntersectionObserver未対応 or 生成失敗を確定させたら二度と試さない */
+  /* 何かが未回収のまま残っていないか a few seconds ごとに掃除する保険。
+     観測が一度も刺さらなかった要素（IO自体の失敗、rootMarginの外側で
+     一生スクロールされない、将来の別バグ）を拾って必ず可視化する。
+     「アニメーションを逃す」は見た目に出ないが「コンテンツが消える」は
+     出るので、こちらを優先する。 */
+  var BACKSTOP_MS = 2500;
+  function forceReveal(el) {
+    if (el.classList.contains('nt-in')) return;
+    el.classList.add('nt-in');
+    if (revealIO) { try { revealIO.unobserve(el); } catch (e) { /* noop */ } }
+  }
   function getRevealIO() {
-    if (revealIO) return revealIO;
-    revealIO = new IntersectionObserver(function (entries) {
-      entries.forEach(function (entry) {
-        if (!entry.isIntersecting) return;
-        entry.target.classList.add('nt-in');
-        revealIO.unobserve(entry.target);
-      });
-    }, { threshold: 0.12, rootMargin: '0px 0px -6% 0px' });
+    if (revealIO || revealIOFailed) return revealIO;
+    if (!('IntersectionObserver' in w)) { revealIOFailed = true; return null; }
+    try {
+      /* rootMarginを大きく取り、要素が実際に画面へ入るより前後に武装させる。
+         速いフリックでも「一度も交差を計算されないまま素通り」を減らす
+         （それでも理論上ゼロにはならない — ジャンプ的なscrollToは経由点を
+         持たないため。そこは下のscroll settle再チェックとタイムアウト
+         保険が拾う）。 */
+      revealIO = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (!entry.isIntersecting) return;
+          forceReveal(entry.target);
+        });
+      }, { threshold: 0.12, rootMargin: '60% 0px 60% 0px' });
+    } catch (e) {
+      revealIOFailed = true;
+      return null;
+    }
     return revealIO;
+  }
+  /* スクロールが落ち着いた瞬間（あるいは各フレーム）に、まだ .nt-in が付いて
+     いない .nt-pending 要素を実測でチェックする。rect.top が viewport の
+     下端より上＝「現在見えている」か「ジャンプスクロールで素通りされた」の
+     どちらか（後者はIntersectionObserverが一度も交差を報告できないケース）。
+     どちらも、もう表示していい/表示すべき状態なので即座に可視化する。 */
+  function checkPendingOnScroll() {
+    var pend = document.querySelectorAll('.nt-pending:not(.nt-in)');
+    for (var i = 0; i < pend.length; i++) {
+      var el = pend[i];
+      var r = el.getBoundingClientRect();
+      if (r.top < w.innerHeight) forceReveal(el);
+    }
+  }
+  var scrollRafPending = false;
+  var scrollSettleTimer = null;
+  function onScrollSettle() {
+    if (!scrollRafPending) {
+      scrollRafPending = true;
+      requestAnimationFrame(function () { scrollRafPending = false; checkPendingOnScroll(); });
+    }
+    clearTimeout(scrollSettleTimer);
+    scrollSettleTimer = setTimeout(checkPendingOnScroll, 150);
+  }
+  var scrollListenerBound = false;
+  function ensureScrollListener() {
+    if (scrollListenerBound) return;
+    scrollListenerBound = true;
+    w.addEventListener('scroll', onScrollSettle, { passive: true });
   }
   function variantClass(el) {
     if (el.classList.contains('tl-item')) return 'nt-reveal-tl';
@@ -90,15 +141,31 @@
   }
   /* 個別要素を1件だけ演出対象に登録する。init() が拾えなかった後づけ要素用。
      reduced-motion では即座に最終状態にして観測すら省く（動かない、が
-     見た目としては常に「表示済み」で正しい）。 */
+     見た目としては常に「表示済み」で正しい）。
+
+     順序が重要: 要素を隠す（.nt-pending を付ける）のは、observer の生成と
+     observe() の両方が例外なく成功した「あと」だけ。先に隠してから
+     observe を試みると、observe が失敗した瞬間にコンテンツが永久に消える
+     ——それがこの関数が直していた不具合そのもの。失敗したら何もせず
+     return するだけで、要素は最初から触られていない＝普通に見えている。 */
   fx.reveal = function (el, variant) {
     if (!el || el.nodeType !== 1 || el.hasAttribute('data-nt-r')) return;
     el.setAttribute('data-nt-r', '1');
     if (fx.reducedMotion) return; /* CSSの初期状態自体が no-preference 限定なので何もしなくてよい */
+    var io = getRevealIO();
+    if (!io) return; /* observer自体が使えない環境。何もせず既定の可視状態のまま */
+    try {
+      io.observe(el);
+    } catch (e) {
+      return; /* observeが例外を投げた。同上、既定の可視状態のまま何もしない */
+    }
+    /* ここまで来て初めて隠す。観測は確実に有効になっている。 */
     var cls = variant === 'slide' ? 'nt-reveal-tl' : variant === 'wipe' ? 'nt-reveal-wipe' : (variant === 'rise' ? 'nt-reveal' : variantClass(el));
     el.classList.add(cls);
+    el.classList.add('nt-pending');
     el.style.setProperty('--nt-d', (revealCounter++ % 7) * 16 + 'ms');
-    getRevealIO().observe(el);
+    ensureScrollListener();
+    setTimeout(function () { forceReveal(el); }, BACKSTOP_MS);
   };
   function scanReveal(root) {
     var els = root.querySelectorAll(REVEAL_SELECTOR);
@@ -142,7 +209,15 @@
   }
   /* svg: NT.artLandmark/artIcon が返す <svg>。塗り図形（例: 名古屋城の金鯱の
      金の三角）は対象外にし、線（stroke）のある図形だけを「一筆書き」で見せる。
-     reduced-motion では何もしない＝最初から普通に全部見えている。 */
+     reduced-motion では何もしない＝最初から普通に全部見えている。
+
+     ここも reveal と同じ順序で: dasharray/dashoffset を設定して線を隠すのは
+     IntersectionObserver の生成と observe() の両方が成功した「あと」だけ。
+     先に隠してから observe を試みると、observe が失敗した瞬間にその名所線画は
+     永久に「描かれていない（=見えない）」状態で固まる。失敗したら dasharray に
+     一切触れず終了＝最初から普通の実線として見えている（進行の初期状態に
+     依存しない、が正しい失敗モード）。仕上げに数秒後のタイムアウト保険も
+     付け、観測が万一一度も刺さらなくても最後は必ず全部描き切った状態にする。 */
   fx.drawIn = function (svg, opts) {
     if (!svg || svg.hasAttribute('data-nt-drawn') || fx.reducedMotion) return;
     svg.setAttribute('data-nt-drawn', '1');
@@ -157,22 +232,38 @@
       if (fill && fill !== 'none') continue;
       var len = shapeLength(el);
       if (!len) continue;
-      el.style.strokeDasharray = len;
-      el.style.strokeDashoffset = len;
-      items.push(el);
+      items.push({ el: el, len: len });
     }
     if (!items.length) return;
-    var io = new IntersectionObserver(function (entries) {
-      entries.forEach(function (entry) {
-        if (!entry.isIntersecting) return;
-        io.unobserve(entry.target);
-        items.forEach(function (el, idx) {
-          el.style.transition = 'stroke-dashoffset ' + dur + 'ms cubic-bezier(.3,.6,.2,1) ' + (idx * stagger) + 'ms';
-          requestAnimationFrame(function () { el.style.strokeDashoffset = '0'; });
+    if (!('IntersectionObserver' in w)) return; /* 未対応環境。線はそのまま普通に見える */
+    var io;
+    try {
+      io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (!entry.isIntersecting) return;
+          draw();
         });
+      }, { threshold: 0.25 });
+      io.observe(svg);
+    } catch (e) {
+      return; /* 生成/observe失敗。dasharrayには一切触っていないので普通の実線のまま */
+    }
+    /* ここまで来て初めて隠す。観測は確実に有効になっている。 */
+    items.forEach(function (it) {
+      it.el.style.strokeDasharray = it.len;
+      it.el.style.strokeDashoffset = it.len;
+    });
+    var drawn = false;
+    function draw() {
+      if (drawn) return;
+      drawn = true;
+      try { io.unobserve(svg); } catch (e) { /* noop */ }
+      items.forEach(function (it, idx) {
+        it.el.style.transition = 'stroke-dashoffset ' + dur + 'ms cubic-bezier(.3,.6,.2,1) ' + (idx * stagger) + 'ms';
+        requestAnimationFrame(function () { it.el.style.strokeDashoffset = '0'; });
       });
-    }, { threshold: 0.25 });
-    io.observe(svg);
+    }
+    setTimeout(draw, BACKSTOP_MS);
   };
   function scanArt(root) {
     var svgs = root.querySelectorAll('svg.nt-art-landmark, svg.nt-art-kinshachi');
@@ -324,6 +415,12 @@
 
     var roots = NT.$$('[id$="-root"]');
     roots.forEach(watchRoot);
+    /* IntersectionObserver の最初のコールバックは仕様上「非同期のいつか」で、
+       環境によっては初回ペイントの直後に来ない（実測、ヘッドレス環境で顕著）。
+       登録した直後に一度だけ実測チェックを走らせ、初期表示ですでに画面内にある
+       要素はコールバックを待たずに見せる。 */
+    if (w.requestAnimationFrame) requestAnimationFrame(checkPendingOnScroll);
+    else checkPendingOnScroll();
 
     /* テーマ切替（昼/夜/端末設定ボタン、および端末設定=autoでのOS変更）に
        焼き込み画像（パターン背景）を追従させる。NT.cycleTheme をラップして

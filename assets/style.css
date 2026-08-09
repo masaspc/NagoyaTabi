@@ -183,10 +183,14 @@ tbody th{font-weight:700;font-size:13px;white-space:nowrap;background:var(--pape
 footer{background:var(--head-bg);color:var(--head-sub);padding:24px 0;font-size:12.5px;margin-top:20px}
 
 /* ==========================================================================
-   演出層（Task 28, assets/fx.js が配線する）。
-   方針: 「隠す→見せる」の初期状態そのものを prefers-reduced-motion:no-preference
-   の中に閉じ込める。reduced-motion環境ではこのブロックが丸ごと無効になるため、
-   fx.js が1行も走らなくてもコンテンツは最初から完全な形で見える。
+   演出層（Task 28, assets/fx.js が配線する）。Task 28.1 で依存の向きを反転。
+   方針: 見える/見えないの既定はCSSではなく常に「見える」。.nt-reveal 系の
+   クラス名だけでは何も隠れない — 実際に隠すのは .nt-pending が同時に付いた
+   ときだけで、その .nt-pending は fx.js が IntersectionObserver の生成と
+   observe() の両方に成功した「あと」でしか付けない（Task 28.1 報告参照）。
+   つまり JS が丸ごと死んでいても、observer がthrowしても、scriptタグの順番が
+   将来入れ替わっても — コンテンツは常に最初から見えている。装飾が動かない
+   だけの、正しい壊れ方になる。
    ========================================================================== */
 @media (prefers-reduced-motion:no-preference){
   /* ---- スクロール登場演出。transform/opacityのみ（レイアウトに触れない） ---- */
@@ -203,16 +207,18 @@ footer{background:var(--head-bg);color:var(--head-sub);padding:24px 0;font-size:
      設問カードが最大930ms遅れて浮かび上がる、実機で触ると重く感じる遅延に
      なっていた（実測して気づいた不具合）。0.6s→0.32s、段差の刻みも
      55ms→16ms（最大112ms）へ縮め、初回スクロール発見時の「ふわっと」は
-     残しつつ、操作直後の反応はもたつかない範囲に収めた。 */
-  .nt-reveal{opacity:0;transform:translateY(14px);
+     残しつつ、操作直後の反応はもたつかない範囲に収めた。
+     .nt-pending が付いていない .nt-reveal* は常に opacity:1/transform:none
+     （下に何も書かない＝ブラウザの初期値のまま）。 */
+  .nt-reveal.nt-pending{opacity:0;transform:translateY(14px);
     transition:opacity .32s cubic-bezier(.22,.61,.36,1),transform .32s cubic-bezier(.22,.61,.36,1);
     transition-delay:var(--nt-d,0ms)}
   .nt-reveal.nt-in{opacity:1;transform:none}
-  .nt-reveal-tl{opacity:0;transform:translateX(-16px);
+  .nt-reveal-tl.nt-pending{opacity:0;transform:translateX(-16px);
     transition:opacity .3s ease,transform .3s cubic-bezier(.22,.61,.36,1);
     transition-delay:var(--nt-d,0ms)}
   .nt-reveal-tl.nt-in{opacity:1;transform:none}
-  .nt-reveal-wipe{opacity:0;transform:translateY(5px);position:relative;
+  .nt-reveal-wipe.nt-pending{opacity:0;transform:translateY(5px);position:relative;
     transition:opacity .28s ease,transform .28s ease;transition-delay:var(--nt-d,0ms)}
   .nt-reveal-wipe.nt-in{opacity:1;transform:none}
   .nt-reveal-wipe::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:2px;
