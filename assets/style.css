@@ -527,3 +527,45 @@ section.tight{padding-top:0}
 @media print{
   .quiz-wrap{display:none !important}
 }
+
+/* あそびページ: ミッションカード（Task 23）。豆知識ガチャ（.gacha-card）と同じ
+   「引いたら二度と出ない」体験だが、引いた1枚には達成/失敗の判定が付く分だけ
+   状態が増える。カードは金バッジ + 本文 + 判定という縦積みで、豆知識ガチャの
+   カードより一段階「挑戦する対象物」らしい重みを持たせる。 */
+.mission-tally{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px}
+.mission-tally-item{background:var(--card);border:1px solid var(--rule);border-radius:3px;
+  padding:8px 12px;font-size:12.5px;color:var(--fg)}
+.mission-tally-item.ok{color:var(--rokusho);font-weight:700;border-color:var(--rokusho)}
+.mission-tally-item.ng{color:var(--miso);font-weight:700;border-color:var(--miso)}
+
+.mission-card{border-color:var(--kin)}
+.mission-text{margin:10px 0 0;font-size:14.5px;line-height:1.8;font-weight:500}
+.mission-spot-link{display:inline-block;margin-top:9px;font-size:12.5px}
+.mission-actions{display:flex;gap:8px;margin-top:13px}
+.mission-actions .btn{flex:1}
+.btn.mission-ng-btn{border-color:var(--miso);color:var(--miso)}
+.mission-result{margin:12px 0 0;font-size:14px;font-weight:700}
+.mission-result.ok{color:var(--rokusho)}
+.mission-result.ng{color:var(--miso)}
+.mission-result.pending{color:var(--gray);font-weight:500}
+.mission-draw{width:100%}
+
+.mission-history{margin-top:16px;border-top:1px solid var(--rule);padding-top:4px}
+.mission-history summary{cursor:pointer;font-size:13px;padding:11px 0;color:var(--accent);
+  font-weight:500;min-height:44px;display:flex;align-items:center;list-style:none;
+  -webkit-tap-highlight-color:transparent}
+.mission-history summary::-webkit-details-marker{display:none}
+.mission-history summary::marker{content:''}
+.mission-hist-list{list-style:none;margin:0;padding:0;font-size:12.5px}
+.mission-hist-list li{padding:9px 0;border-top:1px dotted var(--rule);
+  display:flex;flex-wrap:wrap;align-items:baseline;gap:6px}
+.mission-hist-list li:first-child{border-top:none}
+.mission-hist-cat{font-size:10.5px;color:var(--kin);font-weight:700;flex:none}
+.mission-hist-text{flex:1 1 200px;color:var(--fg)}
+.mission-hist-mark{font-size:11.5px;font-weight:700;color:var(--gray);flex:none}
+.mission-hist-mark.ok{color:var(--rokusho)}
+.mission-hist-mark.ng{color:var(--miso)}
+
+@media print{
+  .mission-tally, .mission-card, .mission-history{display:none !important}
+}

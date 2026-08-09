@@ -1,6 +1,6 @@
 /* 一覧は手で並べる。ビルドがないため自動生成しない。
    ファイルを足したら PRECACHE と VERSION の両方を更新すること。 */
-var VERSION = 'nt-v5';
+var VERSION = 'nt-v6';
 var PRECACHE = [
   './',
   'index.html', 'spots.html', 'gourmet.html', 'tips.html', 'play.html',
@@ -22,6 +22,7 @@ var PRECACHE = [
   'assets/swipe.js',
   'assets/playpage.js',
   'assets/quiz.js',
+  'assets/missions.js',
   'assets/icon.svg',
   'data/spots.data.js',
   'data/trip.data.js',
@@ -29,7 +30,8 @@ var PRECACHE = [
   'data/foods.data.js',
   'data/transit.data.js',
   'data/omiyage.data.js',
-  'data/quiz.data.js'
+  'data/quiz.data.js',
+  'data/missions.data.js'
 ];
 
 self.addEventListener('install', function (e) {
