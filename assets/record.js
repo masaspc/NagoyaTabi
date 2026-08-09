@@ -128,7 +128,12 @@
     });
   };
 
-  /* ---- 五食メーター（リング2つ + 五食一覧 + 全消去）---- */
+  /* ---- 五食メーター（リング2つ + 五食一覧 + 全消去）----
+     Task 28: リングの数字は0からカウントアップ、リング自体もその場に現れたときに
+     金の弧が0%からすっと伸びる（stroke-dashoffsetをCSS transitionで動かす。
+     paint専用でレイアウトに触れないため軽い。prefers-reduced-motionではJS側で
+     即座に最終値へ飛ばす＝動きなし）。五食の枠が5/5に「今まさに」揃った瞬間だけ
+     祝祭パーティクルを1回出す（celebratedSlotsで多重発火を防ぐ）。 */
   function ring(done, total, label) {
     var R = 30, C = 2 * Math.PI * R, pct = total ? done / total : 0;
     var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
@@ -138,27 +143,52 @@
     svg.setAttribute('aria-label', label + ' ' + done + ' / ' + total);
     svg.innerHTML =
       '<circle cx="36" cy="36" r="' + R + '" fill="none" stroke="var(--rule)" stroke-width="6"/>' +
-      '<circle cx="36" cy="36" r="' + R + '" fill="none" stroke="var(--kin)" stroke-width="6"' +
+      '<circle class="ring-fill" cx="36" cy="36" r="' + R + '" fill="none" stroke="var(--kin)" stroke-width="6"' +
       ' stroke-linecap="round" stroke-dasharray="' + C + '"' +
-      ' stroke-dashoffset="' + (C * (1 - pct)) + '" transform="rotate(-90 36 36)"/>' +
-      '<text x="36" y="34" text-anchor="middle" font-size="17" font-weight="700"' +
-      ' fill="var(--fg)" font-family="monospace">' + done + '</text>' +
+      ' stroke-dashoffset="' + C + '" transform="rotate(-90 36 36)"/>' +
+      '<text class="ring-num" x="36" y="34" text-anchor="middle" font-size="17" font-weight="700"' +
+      ' fill="var(--fg)" font-family="monospace">0</text>' +
       '<text x="36" y="48" text-anchor="middle" font-size="10"' +
       ' fill="var(--gray)" font-family="monospace">/ ' + total + '</text>';
+    var fillCircle = svg.querySelector('.ring-fill');
+    var numText = svg.querySelector('.ring-num');
+    if (w.NT.fx) {
+      if (NT.fx.reducedMotion) {
+        fillCircle.setAttribute('stroke-dashoffset', C * (1 - pct));
+        numText.textContent = done;
+      } else {
+        requestAnimationFrame(function () {
+          fillCircle.style.transition = 'stroke-dashoffset .9s cubic-bezier(.3,.6,.2,1)';
+          fillCircle.setAttribute('stroke-dashoffset', C * (1 - pct));
+        });
+        NT.fx.countUp(numText, done, { duration: 900 });
+      }
+    } else {
+      fillCircle.setAttribute('stroke-dashoffset', C * (1 - pct));
+      numText.textContent = done;
+    }
     return NT.el('div', { class: 'ring-box' }, [svg, NT.el('span', { class: 'ring-label', text: label })]);
   }
 
+  var celebratedSlots = false; /* 五食が5/5に揃った瞬間だけ祝祭を出すためのフラグ。
+    ページ読み込み時点で既に5/5（前回までに達成済み）なら初期値をtrueにして
+    再読み込みのたびに毎回バーストしないようにする */
+
   NT.gourmetSections.push(function (root) {
     var p = NT.progressCounts(), c = NT.checks();
+    var justCompleted = p.slotTotal > 0 && p.slotDone === p.slotTotal && !celebratedSlots;
+    if (p.slotDone === p.slotTotal) celebratedSlots = true;
+    if (p.slotDone < p.slotTotal) celebratedSlots = false;
+    var ringsBox = NT.el('div', { class: 'rings' }, [
+      ring(p.slotDone, p.slotTotal, '五食の枠'),
+      ring(p.foodDone, p.foodTotal, '名物ぜんぶ')
+    ]);
     root.appendChild(NT.el('section', {}, [
       NT.el('div', { class: 'sec-head' }, [
         NT.el('span', { class: 'no', text: '01' }), NT.el('h2', { text: '制覇状況' })
       ]),
       NT.el('div', { class: 'card' }, [
-        NT.el('div', { class: 'rings' }, [
-          ring(p.slotDone, p.slotTotal, '五食の枠'),
-          ring(p.foodDone, p.foodTotal, '名物ぜんぶ')
-        ]),
+        ringsBox,
         NT.el('ul', { class: 'slots' }, NT.SLOTS.map(function (s) {
           var f = NT.foods.filter(function (x) { return x.slot === s.id; })[0];
           var done = !!(f && c[f.id] && c[f.id].done);
@@ -178,6 +208,7 @@
           } })
       ])
     ]));
+    if (justCompleted && w.NT.fx) NT.fx.burst(ringsBox);
   });
 
   /* ---- カードごとの記録欄 ----

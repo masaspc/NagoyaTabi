@@ -38,6 +38,10 @@
       slot.textContent = '';
       var got = NT.drawn();
       if (justDrawn) slot.appendChild(cardEl(justDrawn, got.length, total));
+      /* Task 28: 「今引いた1枚」でちょうど全部揃った瞬間だけ祝う。justDrawnが
+         無い呼び出し（初期表示・見返す・リセット後の再描画）では出さない —
+         既にコンプリート済みの手持ちを開いただけで毎回バーストしないため */
+      if (justDrawn && got.length >= total && w.NT.fx) NT.fx.burst(slot);
       slot.appendChild(NT.el('div', { class: 'btnrow' }, [
         NT.el('button', { class: 'btn on', type: 'button',
           text: got.length >= total ? 'コンプリート' : (got.length ? 'もう1枚引く' : '1枚引く'),

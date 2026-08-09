@@ -72,9 +72,15 @@
     return ensureQuestion(save(s));
   };
 
-  NT.quizReset = function () { localStorage.removeItem('nt:quiz'); };
+  NT.quizReset = function () { localStorage.removeItem('nt:quiz'); celebratedQuiz = false; };
 
   /* ---- UI ---- */
+  /* Task 28: 得点は前回描画時の値からカウントアップする（lastScoresが唯一の情報源。
+     ページ読み込み直後は0からのカウントで気持ちよく見せる）。全問終了に「今まさに」
+     到達した瞬間だけ祝祭を出す（celebratedQuizで多重発火を防ぐ。もう一度あそぶ＝
+     quizResetでフラグを戻す） */
+  var lastScores = null;
+  var celebratedQuiz = false;
 
   function nameForm() {
     /* nt:players（core.js）が名前の唯一の情報源。名古屋めし総選挙や
@@ -109,12 +115,20 @@
   }
 
   function scoreBar(s) {
-    return NT.el('div', { class: 'quiz-scorebar' }, [0, 1].map(function (i) {
+    var from = lastScores || [0, 0];
+    var pts = [0, 1].map(function () { return NT.el('span', { class: 'quiz-score-pt mono' }); });
+    var bar = NT.el('div', { class: 'quiz-scorebar' }, [0, 1].map(function (i) {
       return NT.el('div', { class: 'quiz-score' + (!s.finished && s.turn === i ? ' on' : '') }, [
         NT.el('span', { class: 'quiz-score-name', text: s.players[i] }),
-        NT.el('span', { class: 'quiz-score-pt mono', text: s.scores[i] + '点' })
+        pts[i]
       ]);
     }));
+    [0, 1].forEach(function (i) {
+      if (w.NT.fx) NT.fx.countUp(pts[i], s.scores[i], { from: from[i], duration: 500, format: function (n) { return Math.round(n) + '点'; } });
+      else pts[i].textContent = s.scores[i] + '点';
+    });
+    lastScores = s.scores.slice();
+    return bar;
   }
 
   function questionBlock(s) {
@@ -174,7 +188,17 @@
 
     var box = [scoreBar(s)];
     if (s.finished) {
-      box.push(finalBlock(s));
+      var fb = finalBlock(s);
+      box.push(fb);
+      if (!celebratedQuiz) {
+        celebratedQuiz = true;
+        /* build()が返す時点ではまだDOMに未接続（呼び出し元のNT.renderPlayが
+           このあと同期的にappendする）。getBoundingClientRectが正しい位置を
+           返せるよう、接続が終わった次のフレームまでバーストを遅らせる */
+        if (w.NT.fx) requestAnimationFrame(function () {
+          NT.fx.burst(fb.querySelector('.quiz-result-final') || fb);
+        });
+      }
     } else {
       box.push(NT.el('p', { class: 'quiz-progress mono',
         text: s.askedIds.length + ' / ' + NT.quizQuestions.length + '問' }));

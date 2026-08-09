@@ -101,14 +101,19 @@
     if (!s.yen) {
       figure = NT.el('p', { class: 'settle-figure settle-even', text: '貸し借りなし' });
     } else {
+      var yenSpan = NT.el('span', { class: 'settle-yen mono' });
       figure = NT.el('p', { class: 'settle-figure' }, [
         NT.el('span', { class: 'settle-who', text: players[s.from] }),
         ' が ',
         NT.el('span', { class: 'settle-who', text: players[s.to] }),
         ' に',
-        NT.el('span', { class: 'settle-yen mono', text: yenFmt(s.yen) }),
+        yenSpan,
         ' 払う'
       ]);
+      /* Task 28: 精算額はこの節を開いて画面内に入ったところで0からカウントアップ
+         する（結論の数字＝ページの中の“見せ場”という位置づけ）。 */
+      if (w.NT.fx) NT.fx.countUp(yenSpan, s.yen, { trigger: 'inview', duration: 750, format: yenFmt });
+      else yenSpan.textContent = yenFmt(s.yen);
     }
     return NT.el('div', { class: 'card settle-card' }, [
       NT.el('div', { class: 'settle-label', text: '精算' }),
