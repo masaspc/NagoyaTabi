@@ -6,6 +6,15 @@
   --bg:var(--paper); --card:var(--paper-hi); --fg:var(--sumi);
   --head-bg:var(--rokusho-deep); --head-fg:#EDF2EE; --head-sub:#9FB6B1;
   --accent:var(--rokusho); --shadow:0 1px 2px rgba(30,37,35,.06);
+  --shadow-card:0 1px 2px rgba(30,37,35,.07),0 6px 16px rgba(30,37,35,.06);
+  /* Webフォント（Task 28）。<link rel="preconnect">＋display=swapで各ページの
+     <head>から読み込む。オフライン・読み込み失敗時はこのフォールバック列で
+     即座に代替される。使用ウェイトは実際にCSSが使う分だけ:
+     Shippori Mincho B1=700のみ / Zen Kaku Gothic New=400,500,700 / Space Mono=400,700 */
+  --font-serif:"Shippori Mincho B1","Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif;
+  --font-sans:"Zen Kaku Gothic New","Hiragino Kaku Gothic ProN","Yu Gothic Medium",
+    "Meiryo",system-ui,-apple-system,sans-serif;
+  --font-mono:"Space Mono","SF Mono",ui-monospace,Menlo,Consolas,monospace;
 }
 :root:not([data-theme="light"]){
   @media (prefers-color-scheme: dark){
@@ -14,6 +23,9 @@
     --rokusho:#4E9C91; --rokusho-mid:#5FAFA3; --kin:#D9B25E; --miso:#B8705C;
     --head-bg:#0B1413; --head-fg:#E4EAE7; --head-sub:#8FA8A3;
     --accent:#5FAFA3; --shadow:none;
+    /* 暗い背景では黒い影は見えないので「材質感」は上端のハイライト線+
+       広く柔らかい黒の沈み込みで表現する（Task 28） */
+    --shadow-card:0 1px 0 rgba(255,255,255,.05) inset,0 8px 20px rgba(0,0,0,.38);
   }
 }
 :root[data-theme="dark"]{
@@ -22,6 +34,7 @@
   --rokusho:#4E9C91; --rokusho-mid:#5FAFA3; --kin:#D9B25E; --miso:#B8705C;
   --head-bg:#0B1413; --head-fg:#E4EAE7; --head-sub:#8FA8A3;
   --accent:#5FAFA3; --shadow:none;
+  --shadow-card:0 1px 0 rgba(255,255,255,.05) inset,0 8px 20px rgba(0,0,0,.38);
 }
 
 /* カテゴリ色トークン（Task 27: 作品ライブラリ）。spots.data.js の category /
@@ -60,16 +73,28 @@
    タップ領域は詰めない）。 */
 button,select,.btn,a.btn{min-height:44px}
 html{-webkit-text-size-adjust:100%}
-body{margin:0;background:var(--bg);color:var(--fg);
-  font-family:"Zen Kaku Gothic New",system-ui,-apple-system,sans-serif;
+body{margin:0;background:var(--bg);color:var(--fg);position:relative;
+  font-family:var(--font-sans);
   font-size:15px;line-height:1.75;overflow-x:hidden}
-h1,h2,h3{font-family:"Shippori Mincho B1",serif;font-weight:700;letter-spacing:.02em;margin:0}
+h1,h2,h3{font-family:var(--font-serif);font-weight:700;letter-spacing:.02em;margin:0}
 a{color:var(--accent)}
 .wrap{max-width:920px;margin:0 auto;padding:0 18px}
-.mono{font-family:"Space Mono",ui-monospace,monospace}
+.mono{font-family:var(--font-mono)}
 
 header[data-nav]{background:var(--head-bg);color:var(--head-fg);
   border-bottom:3px solid var(--kin);position:sticky;top:0;z-index:20}
+/* すりガラス（Task 28）。まず不透明な background を必ず定義し（未対応環境の
+   フォールバック）、その次に color-mix/backdrop-filter を重ねて上書きする。
+   どちらか片方でも未対応なブラウザは、無効な宣言だけが無視されて
+   直前の不透明な背景がそのまま残る（構文エラーで宣言全体が壊れる、
+   ということはCSSの仕様上起きない）。文字色は var(--head-fg) のまま
+   変えていないので、コントラストは半透明化の前後で変わらない
+   （報告書に実測値あり）。 */
+header[data-nav]{
+  background:color-mix(in srgb, var(--head-bg) 86%, transparent);
+  backdrop-filter:saturate(150%) blur(10px);
+  -webkit-backdrop-filter:saturate(150%) blur(10px);
+}
 .nav{max-width:920px;margin:0 auto;padding:0 18px;display:flex;align-items:center;gap:4px}
 .nav a{flex:1;text-align:center;padding:13px 2px;color:var(--head-sub);
   text-decoration:none;font-size:12.5px;font-weight:500;white-space:nowrap;
@@ -77,24 +102,59 @@ header[data-nav]{background:var(--head-bg);color:var(--head-fg);
 .nav a.on{color:#fff;border-bottom-color:var(--kin);font-weight:700}
 .theme-toggle{background:none;border:1px solid rgba(199,154,60,.45);color:var(--kin-light);
   font-size:11px;padding:7px 9px;border-radius:2px;cursor:pointer;
-  font-family:"Space Mono",ui-monospace,monospace;white-space:nowrap;min-height:44px}
+  font-family:var(--font-mono);white-space:nowrap;min-height:44px}
 
-.page-head{background:var(--head-bg);color:var(--head-fg);padding:26px 0 24px}
-.page-head .eyebrow{font-family:"Space Mono",ui-monospace,monospace;font-size:10.5px;
+/* ページヘッダー（Task 28）。--head-bg → --rokusho-deep のグラデーション。
+   --rokusho-deep はテーマで再定義されない定数（常に #0D2B28 の暗緑）なので、
+   昼夜どちらでも「暗いほうへ向かう」グラデーションになり、白文字のコントラストは
+   単色時より下がらない（実測値は報告書参照）。position:relative + z-index を
+   .page-head-content に与え、装飾層（.page-head-art）は常にその下に沈める。 */
+.page-head{background:linear-gradient(135deg,var(--head-bg) 0%,var(--rokusho-deep) 120%);
+  color:var(--head-fg);padding:26px 0 24px;position:relative;overflow:hidden}
+/* 右側に線画・金鯱ぶんの「読めない帯」を確保する（Task 28 実測で修正）。
+   最初の実装は right:-14px/bottom:-16px で右下に置いただけだったが、タイトルが
+   短いページ（実用メモ／あそび）はヘッダー自体の高さが低く、132px角の絵が
+   見出し・小見出しの文字を直接踏んで可読性を壊した（スクリーンショット実測で発見）。
+   タイトルの長さに関係なく絶対に文字が入ってこない縦の帯を padding-right で
+   text側に強制し、その帯の中だけで絵を動かす方式に直した。 */
+.page-head-content{position:relative;z-index:1}
+/* 帯はh1とsubにだけ付ける。eyebrow（PLAN / 2026.08.11 TUE - 08.12 WED）は
+   絵より上の行で衝突しないため帯を付けない方が読みやすい —
+   全部に一律で付けると短いeyebrowまで無駄に折り返してしまう不具合が
+   スクリーンショット実測で見つかった。 */
+.page-head .eyebrow{font-family:var(--font-mono);font-size:10.5px;
   letter-spacing:.24em;color:var(--kin-light);text-transform:uppercase;margin-bottom:10px}
-.page-head h1{font-size:clamp(23px,6vw,36px);line-height:1.3;color:#fff}
+.page-head h1{font-size:clamp(23px,6vw,36px);line-height:1.3;color:#fff;padding-right:82px}
 .page-head .sub{display:block;font-size:13px;font-weight:400;color:var(--head-sub);margin-top:10px;
-  font-family:"Zen Kaku Gothic New",system-ui,sans-serif}
+  font-family:var(--font-sans);padding-right:82px}
+
+/* ヘッダーの装飾層（Task 28, assets/fx.js が組み立てる）。名所の線画 or 金鯱 +
+   麻の葉/青海波の透かしパターン。z-index:0、テキストより後ろに固定し、
+   pointer-events:none で操作の邪魔をしない。 */
+.page-head-art{position:absolute;inset:0;z-index:0;pointer-events:none}
+.page-head-pattern{position:absolute;inset:0;background-repeat:repeat}
+.page-head-glyph{position:absolute;right:-8px;bottom:-6px;
+  color:var(--kin-light);line-height:0}
+/* 不透明度は低め（Task 28 実測で調整）。タイトルが短いページ（実用メモ／あそび）は
+   ヘッダー自体が低く、絵がeyebrow・h1のどこかと必ず少し重なる（帯で守れるのは
+   h1/sub止まり）。テキストは別レイヤーで絵の「上」に不透明で描かれるため
+   コントラスト自体は落ちないが、絵が濃いと重なった瞬間「事故っぽく」見える。
+   金鯱は塗り図形で線画より視覚的に重いぶん、さらに低くしてある。 */
+.page-head-glyph .nt-art-landmark{opacity:.22}
+.page-head-glyph .nt-art-kinshachi{opacity:.3}
+@media (max-width:360px){.page-head h1,.page-head .sub{padding-right:68px}}
 
 section{padding:30px 0}
 .sec-head{display:flex;align-items:baseline;gap:12px;margin-bottom:18px;
   border-bottom:1px solid var(--rule);padding-bottom:10px}
 .sec-head h2{font-size:20px}
-.sec-head .no{font-family:"Space Mono",ui-monospace,monospace;font-size:10.5px;
+.sec-head .no{font-family:var(--font-mono);font-size:10.5px;
   letter-spacing:.2em;color:var(--gray)}
 
-.card{background:var(--card);border:1px solid var(--rule);border-radius:3px;
-  padding:15px 17px;margin-bottom:12px;box-shadow:var(--shadow)}
+.card{background-color:var(--card);
+  background-image:linear-gradient(165deg,rgba(255,255,255,.05),rgba(255,255,255,0) 55%);
+  border:1px solid var(--rule);border-radius:3px;
+  padding:15px 17px;margin-bottom:12px;box-shadow:var(--shadow-card,var(--shadow))}
 .badge{display:inline-block;font-size:10.5px;letter-spacing:.06em;font-weight:700;
   padding:2px 7px;border-radius:2px;vertical-align:1px;white-space:nowrap}
 .badge.indoor{background:var(--rokusho);color:#fff}
@@ -116,16 +176,76 @@ section{padding:30px 0}
 table{border-collapse:collapse;width:100%;min-width:560px;font-size:13px}
 th,td{padding:11px 13px;text-align:left;border-bottom:1px solid var(--rule);vertical-align:top}
 thead th{background:var(--rokusho-deep);color:#fff;
-  font-family:"Shippori Mincho B1",serif;font-size:13.5px;position:sticky;top:0}
+  font-family:var(--font-serif);font-size:13.5px;position:sticky;top:0}
 tbody th{font-weight:700;font-size:13px;white-space:nowrap;background:var(--paper-hi);
   position:sticky;left:0;z-index:1}
 
 footer{background:var(--head-bg);color:var(--head-sub);padding:24px 0;font-size:12.5px;margin-top:20px}
 
+/* ==========================================================================
+   演出層（Task 28, assets/fx.js が配線する）。
+   方針: 「隠す→見せる」の初期状態そのものを prefers-reduced-motion:no-preference
+   の中に閉じ込める。reduced-motion環境ではこのブロックが丸ごと無効になるため、
+   fx.js が1行も走らなくてもコンテンツは最初から完全な形で見える。
+   ========================================================================== */
 @media (prefers-reduced-motion:no-preference){
-  .card{animation:rise .35s ease both}
-  @keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  /* ---- スクロール登場演出。transform/opacityのみ（レイアウトに触れない） ---- */
+  /* scale()は使わない: transformはgetBoundingClientRect()の返り値そのものを
+     縮めるため、演出が終わるまでの間カード内のボタン・入力欄が幾何学的に
+     44px未満へ縮んで測定されてしまう（実測して気づいた不具合）。translateYと
+     opacityだけにして、タップ領域のサイズはアニメーション中も常に本来のまま
+     保つ。 */
+  /* 継続時間・段差は短め（Task 28 実測で調整）。この演出は「初回スクロールで
+     発見する」瞬間だけでなく、このサイトのほぼ全操作（チェック・回答・
+     カードを開く等）が対象コンテナを root.textContent=''+再構築で丸ごと
+     作り直す設計のため、事実上「クリックのたびに再生される」。最初は
+     0.6s＋最大330msの段差にしていたが、「クイズをはじめる」を押すたびに
+     設問カードが最大930ms遅れて浮かび上がる、実機で触ると重く感じる遅延に
+     なっていた（実測して気づいた不具合）。0.6s→0.32s、段差の刻みも
+     55ms→16ms（最大112ms）へ縮め、初回スクロール発見時の「ふわっと」は
+     残しつつ、操作直後の反応はもたつかない範囲に収めた。 */
+  .nt-reveal{opacity:0;transform:translateY(14px);
+    transition:opacity .32s cubic-bezier(.22,.61,.36,1),transform .32s cubic-bezier(.22,.61,.36,1);
+    transition-delay:var(--nt-d,0ms)}
+  .nt-reveal.nt-in{opacity:1;transform:none}
+  .nt-reveal-tl{opacity:0;transform:translateX(-16px);
+    transition:opacity .3s ease,transform .3s cubic-bezier(.22,.61,.36,1);
+    transition-delay:var(--nt-d,0ms)}
+  .nt-reveal-tl.nt-in{opacity:1;transform:none}
+  .nt-reveal-wipe{opacity:0;transform:translateY(5px);position:relative;
+    transition:opacity .28s ease,transform .28s ease;transition-delay:var(--nt-d,0ms)}
+  .nt-reveal-wipe.nt-in{opacity:1;transform:none}
+  .nt-reveal-wipe::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:2px;
+    background:var(--kin);transform:scaleX(0);transform-origin:left;
+    transition:transform .32s ease .05s}
+  .nt-reveal-wipe.nt-in::after{transform:scaleX(1)}
+
+  /* ---- 金の光沢（見出し・金鯱）。transformのみのスイープ、mix-blend-modeで
+     文字色そのものは一切変えない（コントラストは常に元のまま） ---- */
+  .nt-shimmer{position:relative;overflow:hidden}
+  .nt-shimmer::after{content:"";position:absolute;inset:-25% -10%;
+    background:linear-gradient(75deg,transparent 42%,rgba(255,255,255,.5) 50%,transparent 58%);
+    mix-blend-mode:overlay;transform:translateX(-130%);pointer-events:none;
+    animation:nt-shimmer-sweep 6.5s ease-in-out infinite}
+  @keyframes nt-shimmer-sweep{
+    0%,55%{transform:translateX(-130%)}
+    78%{transform:translateX(130%)}
+    100%{transform:translateX(130%)}
+  }
 }
+/* reduced-motion でも .nt-shimmer::after 自体は存在し得るが、上のアニメーション定義が
+   no-preference の中にしかないため静止したまま。念のため位置も明示的に画面外へ固定する */
+.nt-shimmer::after{transform:translateX(-130%)}
+
+/* ---- 粒状のノイズオーバーレイ。1枚だけ、静止画（アニメーションしない＝コスト無し） ---- */
+.nt-grain{position:fixed;inset:0;z-index:1;opacity:.05;pointer-events:none;
+  background-repeat:repeat;mix-blend-mode:overlay}
+
+/* ---- 祝祭パーティクル（Task 28）。transform+opacityのみ、Web Animations APIで
+   駆動しコンポジタ層で動く。完了後にホストごとDOMから外れる（fx.js側） ---- */
+.nt-burst-host{position:fixed;left:0;top:0;width:0;height:0;z-index:60;pointer-events:none}
+.nt-burst-particle{position:absolute;border-radius:50%;transform:translate(-50%,-50%)}
+.nt-burst-particle.sq{border-radius:2px}
 
 .plan-switch-row{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:8px}
 .plan-switch-row .btn{flex:1 1 220px;text-align:left}
@@ -150,7 +270,7 @@ footer{background:var(--head-bg);color:var(--head-sub);padding:24px 0;font-size:
    操作リンク（.btn.here と同じ役割）。.btn.here に倣い、幅は詰めたまま
    高さだけ44pxのタップ領域を確保する */
 .tl-links a{display:inline-flex;align-items:center;min-height:44px}
-.hero-tag{font-family:"Zen Kaku Gothic New",system-ui,sans-serif;font-size:10px;
+.hero-tag{font-family:var(--font-sans);font-size:10px;
   letter-spacing:.06em;color:#fff;background:var(--miso);padding:2px 8px;border-radius:2px;
   margin-left:8px;vertical-align:2px;font-weight:700;white-space:nowrap}
 .k-meal .tl-body::before{background:var(--rokusho);border-color:var(--rokusho)}
@@ -165,7 +285,7 @@ footer{background:var(--head-bg);color:var(--head-sub);padding:24px 0;font-size:
   border-radius:3px;padding:13px 15px;margin:18px 0 4px}
 .now-bar.active{border-left-color:var(--kin)}
 .now-label{font-size:10.5px;letter-spacing:.2em;color:var(--kin-light)}
-.now-title{font-size:16px;font-weight:700;margin-top:4px;font-family:"Shippori Mincho B1",serif}
+.now-title{font-size:16px;font-weight:700;margin-top:4px;font-family:var(--font-serif)}
 .now-sub{font-size:12.5px;color:var(--head-sub);margin-top:4px}
 .now-jump{display:inline-block;font-size:12px;margin-top:8px;color:var(--kin-light)}
 .clock-bar{display:flex;align-items:center;gap:9px;margin-top:11px;
@@ -191,11 +311,11 @@ footer{background:var(--head-bg);color:var(--head-sub);padding:24px 0;font-size:
 
 .sit{margin:18px 0 0}
 .sit-label{font-size:11px;letter-spacing:.18em;color:var(--gray);margin-bottom:7px;
-  font-family:"Space Mono",ui-monospace,monospace}
+  font-family:var(--font-mono)}
 .tl-item.has-alt .tl-body{background:rgba(107,50,38,.07);margin-left:-4px;
   padding:6px 9px 8px 21px;border-radius:2px}
 .tl-item.has-alt .tl-body::before{background:var(--miso);border-color:var(--miso)}
-.alt-tag{font-family:"Zen Kaku Gothic New",system-ui,sans-serif;font-size:10px;
+.alt-tag{font-family:var(--font-sans);font-size:10px;
   color:#fff;background:var(--rokusho-mid);padding:2px 7px;border-radius:2px;
   margin-left:8px;vertical-align:2px;font-weight:700}
 .tl-orig{display:block;font-size:11.5px;color:var(--gray);margin-top:5px;text-decoration:line-through}
@@ -228,7 +348,7 @@ footer{background:var(--head-bg);color:var(--head-sub);padding:24px 0;font-size:
 .spot-meta{display:grid;grid-template-columns:52px 1fr;gap:2px 10px;margin:11px 0 0;font-size:12.5px}
 .spot-meta dt{color:var(--gray)}
 .spot-meta dd{margin:0}
-.spot-body h4{font-family:"Shippori Mincho B1",serif;font-size:13px;color:var(--accent);
+.spot-body h4{font-family:var(--font-serif);font-size:13px;color:var(--accent);
   margin:14px 0 4px}
 .triv{margin:0;padding-left:19px;font-size:13px}
 .triv li{margin:3px 0}
@@ -252,7 +372,7 @@ footer{background:var(--head-bg);color:var(--head-sub);padding:24px 0;font-size:
 .route li::before{content:counter(route);position:absolute;left:0;top:0;
   width:19px;height:19px;border-radius:50%;background:var(--rokusho);color:#fff;
   font-size:10.5px;font-weight:700;line-height:19px;text-align:center;
-  font-family:"Space Mono",ui-monospace,monospace}
+  font-family:var(--font-mono)}
 .route li::after{content:"";position:absolute;left:9px;top:19px;bottom:0;width:1px;
   background:var(--rule)}
 .route li:last-child::after{display:none}
@@ -274,7 +394,7 @@ section.tight{padding-top:0}
 .food[open] .chev{transform:rotate(90deg)}
 .sm-cat{white-space:nowrap}
 .food-price{font-size:11.5px;color:var(--gray);white-space:nowrap;flex:none}
-.food-body h4{font-family:"Shippori Mincho B1",serif;font-size:13px;color:var(--accent);
+.food-body h4{font-family:var(--font-serif);font-size:13px;color:var(--accent);
   margin:14px 0 4px}
 .food-what{margin:9px 0 0;font-size:13.5px;font-weight:500}
 .food-why{margin:0;font-size:13px;color:var(--fg)}
@@ -375,7 +495,7 @@ section.tight{padding-top:0}
   transition:transform .15s ease}
 .tips-det .chev::before{content:'▸'}
 .tips-det[open] .chev{transform:rotate(90deg)}
-.tips-det summary .no{font-family:"Space Mono",ui-monospace,monospace;font-size:10.5px;
+.tips-det summary .no{font-family:var(--font-mono);font-size:10.5px;
   letter-spacing:.2em;color:var(--gray);flex:none}
 .tips-det summary h2{font-size:16.5px}
 .tips-body-wrap{padding:0 17px 18px;border-top:1px solid var(--rule)}
@@ -437,10 +557,21 @@ section.tight{padding-top:0}
   section{ padding:6pt 0; }
   .card{ break-inside:avoid; box-shadow:none; border:1px solid #bbb; }
   .day{ box-shadow:none; border:1px solid #bbb; }
-  .page-head{ padding:0 0 5pt; border-bottom:2pt solid #000; }
+  .page-head{ padding:0 0 5pt; border-bottom:2pt solid #000; background:#fff !important; }
   .page-head h1{ font-size:15pt; color:#000; }
   .page-head .sub{ display:block; margin-top:3pt; }
   .page-head .eyebrow, .page-head .sub{ color:#333; }
+
+  /* Task 28 の演出層はすべて紙では消す。「印刷は効果なしの黒白1色」の要件どおり。
+     .nt-reveal 系は「スクロールして画面内に入ったら見せる」仕組みなので、
+     一度も画面内に入らなかった要素（例: 一度もスクロールしていないDAY2の
+     コマ）がもし opacity:0 のまま残っていると、印刷からその内容が消えてしまう。
+     nt-in の有無に関わらず必ず全部見える状態へ強制的に戻す。 */
+  .nt-grain, .page-head-art, .nt-burst-host{ display:none !important; }
+  .nt-shimmer::after{ display:none !important; }
+  .card{ background-image:none !important; }
+  .nt-reveal, .nt-reveal-tl, .nt-reveal-wipe{ opacity:1 !important; transform:none !important; }
+  .nt-reveal-wipe::after{ transform:scaleX(1) !important; display:none !important; }
   .daybar{ background:#eee !important; color:#000 !important; border-bottom:1px solid #bbb; }
   thead th{ background:#eee !important; color:#000 !important; }
   footer{ background:none; color:#333; border-top:1px solid #bbb; }
@@ -604,7 +735,7 @@ section.tight{padding-top:0}
 .rate-badge{font-size:10.5px;color:var(--accent);font-weight:700}
 .rate-badge.pending{color:var(--gray);font-weight:500}
 .rate{margin-top:13px;padding-top:11px;border-top:1px solid var(--rule)}
-.rate h4{font-family:"Shippori Mincho B1",serif;font-size:13px;color:var(--accent);margin:0 0 8px}
+.rate h4{font-family:var(--font-serif);font-size:13px;color:var(--accent);margin:0 0 8px}
 .rate-row{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:8px}
 .rate-row:last-child{margin-bottom:0}
 .rate-player{flex:0 0 68px;font-size:12.5px;color:var(--gray);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}

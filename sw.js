@@ -1,6 +1,6 @@
 /* 一覧は手で並べる。ビルドがないため自動生成しない。
    ファイルを足したら PRECACHE と VERSION の両方を更新すること。 */
-var VERSION = 'nt-v10';
+var VERSION = 'nt-v11';
 var PRECACHE = [
   './',
   'index.html', 'spots.html', 'gourmet.html', 'tips.html', 'play.html',
@@ -8,6 +8,7 @@ var PRECACHE = [
   'assets/style.css',
   'assets/core.js',
   'assets/art.js',
+  'assets/fx.js',
   'assets/itinerary.js',
   'assets/recovery.js',
   'assets/situation.js',

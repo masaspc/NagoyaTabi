@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>あそび｜名古屋 王道 2026.8.11-12</title>
 <meta name="theme-color" content="#0D2B28">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@700&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="assets/style.css">
@@ -23,6 +26,7 @@
   営業時間は 2026-08-08 時点の確認。「要確認」の店は出発前に電話で確かめてください。
 </div></footer>
 <script src="assets/core.js"></script>
+<script src="assets/art.js"></script>
 <script src="data/spots.data.js"></script>
 <script src="data/foods.data.js"></script>
 <script src="data/trivia.data.js"></script>
@@ -33,10 +37,12 @@
 <script src="assets/missions.js"></script>
 <script src="assets/foodrank.js"></script>
 <script src="assets/swipe.js"></script>
+<script src="assets/fx.js"></script>
 <script>
   NT.mountNav('play.html');
   NT.renderPlay();
   NT.initSwipe('play.html');
+  NT.fx.init();
 </script>
 <script>
   if ('serviceWorker' in navigator && location.protocol.indexOf('http') === 0) {
