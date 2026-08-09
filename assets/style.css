@@ -24,6 +24,33 @@
   --accent:#5FAFA3; --shadow:none;
 }
 
+/* カテゴリ色トークン（Task 27: 作品ライブラリ）。spots.data.js の category /
+   foods.data.js の cat に出てくる14分類ぶん。既存の3系統から派生させて
+   統一感を保つ: 六浄緑=文化・自然、金=商業、味噌=食事。
+   すべて light/dark 両方で --bg と --card の両方に対して 4.5:1 以上の
+   コントラストを確保している（文字にも小さなグリフにも使える基準で統一）。
+   計算根拠は task-27-report.md に一覧で記載。 */
+:root{
+  --cat-shrine:#287763; --cat-castle:#25766b; --cat-museum:#30737e; --cat-park:#317752;
+  --cat-shopping:#7f6822; --cat-shotengai:#975e26; --cat-mall:#736c21; --cat-miyage:#ab5028;
+  --cat-meal:#ac4f3c; --cat-snack:#b5454e; --cat-yatai:#a0582e; --cat-yataigai:#b83d66;
+  --cat-kissa:#8d623c; --cat-kanmi:#b74054;
+}
+:root:not([data-theme="light"]){
+  @media (prefers-color-scheme: dark){
+    --cat-shrine:#339980; --cat-castle:#319b8d; --cat-museum:#3d94a1; --cat-park:#3e9868;
+    --cat-shopping:#a1842b; --cat-shotengai:#be772f; --cat-mall:#9e952e; --cat-miyage:#d26b3f;
+    --cat-meal:#c7705f; --cat-snack:#c86d75; --cat-yatai:#c7713f; --cat-yataigai:#cc6688;
+    --cat-kissa:#b37c4d; --cat-kanmi:#cb6a7a;
+  }
+}
+:root[data-theme="dark"]{
+  --cat-shrine:#339980; --cat-castle:#319b8d; --cat-museum:#3d94a1; --cat-park:#3e9868;
+  --cat-shopping:#a1842b; --cat-shotengai:#be772f; --cat-mall:#9e952e; --cat-miyage:#d26b3f;
+  --cat-meal:#c7705f; --cat-snack:#c86d75; --cat-yatai:#c7713f; --cat-yataigai:#cc6688;
+  --cat-kissa:#b37c4d; --cat-kanmi:#cb6a7a;
+}
+
 *{box-sizing:border-box}
 /* サイト全体の最小タップ高さ。44px が本プロジェクトの下限。
    button/select/.btn/a.btn を一括で床上げしておき、後から追加される
