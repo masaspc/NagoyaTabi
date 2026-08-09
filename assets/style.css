@@ -617,3 +617,40 @@ section.tight{padding-top:0}
 @media print{
   .rank-names{display:none !important}
 }
+
+/* 実用メモページ: 立替・割り勘記録（Task 25）。この機能の要点は最終行の
+   精算額ひとつなので、節を開いたら真っ先に .settle-card が来る。数字だけは
+   ページ内のどの見出しよりも大きくして、迷わせない。 */
+.settle-card{text-align:center;padding-top:14px}
+.settle-label{font-size:10.5px;letter-spacing:.18em;color:var(--gray)}
+.settle-figure{margin:9px 0 0;font-size:19px;line-height:1.5}
+.settle-figure.settle-even{font-size:15px;color:var(--gray)}
+.settle-who{font-weight:700;color:var(--accent)}
+.settle-yen{font-size:26px;font-weight:700;color:var(--kin);margin:0 3px;display:inline-block}
+.settle-totals{display:flex;justify-content:center;flex-wrap:wrap;gap:6px 16px;margin-top:12px;
+  padding-top:11px;border-top:1px solid var(--rule);font-size:12px;color:var(--gray)}
+
+/* 追加フォーム: 金額だけが必須で、他はすべて既定値のあるトグル。
+   「金額を入れて 追加する を押すだけ」が片手操作で完結する構成 */
+.exp-form-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}
+.exp-amount{flex:1 1 140px;font-size:16px;padding:9px 12px;min-height:44px;
+  background:var(--bg);color:var(--fg);border:1px solid var(--rule);border-radius:2px;font-family:inherit}
+.exp-label{flex:1 1 140px;font-size:13px;padding:9px 12px;min-height:44px;
+  background:var(--bg);color:var(--fg);border:1px solid var(--rule);border-radius:2px;font-family:inherit}
+.exp-toggle{margin-bottom:8px}
+.exp-toggle .btn{flex:1 1 100px}
+.exp-add{width:100%;margin-top:2px}
+
+.exp-list{list-style:none;margin:14px 0 0;padding:0}
+.exp-item{display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;
+  padding:11px 0;border-top:1px dotted var(--rule)}
+.exp-item:first-child{border-top:none}
+.exp-item-main{flex:1 1 180px;display:flex;justify-content:space-between;gap:10px;min-width:0}
+.exp-item-label{font-size:13.5px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.exp-item-yen{font-size:13.5px;font-weight:700;color:var(--fg);flex:none}
+.exp-item-meta{flex:1 1 100%;font-size:11.5px;color:var(--gray)}
+.exp-del{font-size:11.5px;padding:6px 11px;flex:none}
+
+@media print{
+  .exp-form, .exp-del{display:none !important}
+}
