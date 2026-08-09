@@ -207,6 +207,36 @@ footer{background:var(--head-bg);color:var(--head-sub);padding:24px 0;font-size:
 .triv li{margin:3px 0}
 .triv.tips li{color:var(--miso)}
 
+/* highlight = 「ここだけは見る」。現地で時間がないとき最初に読ませたい1行なので、
+   金枠のカードで他の本文（dl/ul）より視覚的な重みを持たせる。豆知識ガチャの
+   .gacha-card と同系統の見せ方（金・グラデーション）をこの1カード用に流用する。 */
+.spot-highlight{border:1px solid var(--kin);border-radius:3px;
+  background:linear-gradient(160deg,rgba(199,154,60,.16),rgba(199,154,60,0));
+  padding:11px 13px;margin:12px 0 0}
+.spot-highlight-label{display:block;font-size:10.5px;letter-spacing:.14em;
+  color:var(--kin);font-weight:700;margin-bottom:4px}
+.spot-highlight-text{margin:0;font-size:13.5px;line-height:1.7;font-weight:500}
+
+/* route = 現地での回り方。3-6ステップの手順なので採番リストで見せる。
+   .triv（豆知識・注意の箇条書き）とは視覚的に区別するため、番号は円で囲み
+   縦の連結線を引いて「順番に歩く」動線であることを示す。 */
+.route{list-style:none;counter-reset:route;margin:0;padding:0;font-size:13px}
+.route li{counter-increment:route;position:relative;padding:0 0 12px 28px;line-height:1.6}
+.route li::before{content:counter(route);position:absolute;left:0;top:0;
+  width:19px;height:19px;border-radius:50%;background:var(--rokusho);color:#fff;
+  font-size:10.5px;font-weight:700;line-height:19px;text-align:center;
+  font-family:"Space Mono",ui-monospace,monospace}
+.route li::after{content:"";position:absolute;left:9px;top:19px;bottom:0;width:1px;
+  background:var(--rule)}
+.route li:last-child::after{display:none}
+.route li:last-child{padding-bottom:0}
+
+/* photo = 撮るなら。highlight ほどの重みは要らないが、豆知識の箇条書きに
+   埋もれさせないよう独立した引用ブロックとして見せる。 */
+.spot-photo{border-left:3px solid var(--rokusho-mid);padding:2px 0 2px 11px;margin:14px 0 0}
+.spot-photo-label{display:block;font-size:10.5px;letter-spacing:.1em;color:var(--gray);margin-bottom:2px}
+.spot-photo-text{margin:0;font-size:12.5px;line-height:1.65;color:var(--fg)}
+
 /* 名物カード = <details>。spot カードと同じ折りたたみパターンを踏襲する */
 section.tight{padding-top:0}
 .card.food{padding:0;margin-bottom:9px}

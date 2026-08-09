@@ -75,6 +75,18 @@
     ));
     var body = NT.el('div', { class: 'spot-body' }, [
       meta,
+      s.highlight ? NT.el('div', { class: 'spot-highlight' }, [
+        NT.el('span', { class: 'spot-highlight-label', text: 'ここだけは見る' }),
+        NT.el('p', { class: 'spot-highlight-text', text: s.highlight })
+      ]) : null,
+      s.route && s.route.length ? NT.el('h4', { text: '回り方' }) : null,
+      s.route && s.route.length ? NT.el('ol', { class: 'route' }, s.route.map(function (r) {
+        return NT.el('li', { text: r });
+      })) : null,
+      s.photo ? NT.el('div', { class: 'spot-photo' }, [
+        NT.el('span', { class: 'spot-photo-label', text: '撮るなら' }),
+        NT.el('p', { class: 'spot-photo-text', text: s.photo })
+      ]) : null,
       NT.el('h4', { text: '豆知識' }),
       NT.el('ul', { class: 'triv' }, s.trivia.map(function (t) {
         return NT.el('li', { text: t });
