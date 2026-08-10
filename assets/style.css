@@ -555,7 +555,7 @@ section.tight{padding-top:0}
 
 /* 実用メモページの節 = <details>（Task 13）。ページが伸び続けるのを止めるため、
    spot/food/om カードと同じ折りたたみパターンを節単位に適用する。
-   既定で開くのは 01（営業時間・定休日）だけ。開閉状態は tipspage.js の
+   既定で開くのは 03（営業時間・定休日）だけ。開閉状態は tipspage.js の
    openIds が再描画をまたいで保持する */
 .tips-det{padding:0;margin-bottom:12px}
 .tips-det>summary{cursor:pointer;padding:14px 17px;list-style:none;display:flex;
@@ -571,6 +571,38 @@ section.tight{padding-top:0}
 .tips-det summary h2{font-size:16.5px}
 .tips-body-wrap{padding:0 17px 18px;border-top:1px solid var(--rule)}
 .tips-body-wrap>*:first-child{margin-top:15px}
+
+/* 出発前チェック（実用メモ 01）と 1泊2日の進め方（同 02）。
+   チェックは <input type="checkbox"> ＋ <label>。行頭の全体ルール
+   （button,select,.btn,a.btn の min-height:44px）は素の input と label を
+   対象にしていないため、タップ領域はここで明示して床上げする。
+   チェックボックス自体を大きくするのではなく、説明文まで含む label 全体を
+   押せるようにして、片手で上から順に潰していけるようにする。 */
+.pk-count{font-family:var(--font-mono);font-size:13px;color:var(--accent);margin-left:8px}
+.pk-gcount{font-family:var(--font-mono);font-size:11px;color:var(--gray);margin-left:8px;
+  font-weight:400}
+.pk-group{margin-bottom:9px}
+.pk-list{list-style:none;margin:11px 0 0;padding:0}
+.pk-item{display:flex;align-items:flex-start;gap:10px;
+  padding:2px 0;border-top:1px dotted var(--rule)}
+.pk-item:first-child{border-top:none}
+/* accent-color でチェック済みの色をテーマの緑に合わせる（未対応環境では
+   既定の青のまま。機能は変わらない） */
+.pk-check{flex:none;width:20px;height:20px;margin:13px 0 0;accent-color:var(--rokusho);cursor:pointer}
+.pk-label{flex:1;cursor:pointer;display:block;padding:11px 0;min-height:44px;
+  -webkit-tap-highlight-color:transparent}
+.pk-name{display:block;font-size:13.5px;font-weight:500;line-height:1.6}
+.pk-why{display:block;font-size:12px;color:var(--gray);line-height:1.7;margin-top:2px}
+/* 済みは打ち消し線で消し込む。文字色も落として、残っているものが浮き上がるようにする。
+   理由文（.pk-why）には opacity を掛けない —— --gray は --card に対して 4.5:1 を
+   ちょうど満たす値で決めてあり、そこに .6 を掛けると 2.5:1 前後まで落ちて読めなくなる。
+   打ち消し線と見出しの色落ちだけで「済み」は十分伝わる。 */
+.pk-item.done .pk-name{text-decoration:line-through;color:var(--gray);font-weight:400}
+
+.kh{margin-bottom:9px}
+.kh h3{font-size:15px}
+.kh .triv{margin-top:9px}
+.kh .triv li{margin:6px 0}
 
 /* 豆知識ガチャ（Task 14）: 引いたカードは金枠で強調する。名所ページの
    先頭に来るため section 内 .card として既存の余白ルールに乗る */
@@ -710,6 +742,18 @@ section.tight{padding-top:0}
      そのまま持ち込むと行程の各コマ・営業時間表の各行が縦に伸びてページ数が
      増える。印刷では詰めて戻す。 */
   .tl-links a, .tel-line a{ display:inline; min-height:auto; }
+
+  /* 持ち物チェックは、紙でも「手でチェックを入れるリスト」として使えるほうが
+     価値が高い（前夜に鞄の横に置く用途）。他の操作物と違ってチェックボックスは
+     消さず、タップ領域だけ詰める。「チェックを全部外す」ボタンは .btn なので
+     上の一括ルールで既に消えている。
+     print-color-adjust:exact は、画面で既にチェック済みの項目の塗りを紙にも
+     残すため（既定では背景・塗りが省かれ、済みと未済みが区別できなくなる）。 */
+  .pk-check{ -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  .pk-label{ min-height:0; padding:1pt 0; }
+  .pk-item{ break-inside:avoid; padding:0; }
+  .pk-why{ font-size:8.5pt; }
+  .kh .triv li{ margin:1pt 0; }
 
   @page{ size:A4; margin:12mm; }
 }

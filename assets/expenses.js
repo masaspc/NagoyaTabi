@@ -207,5 +207,5 @@
     ]);
   }
 
-  NT.tipsSections.push({ no: '08', title: '立替・割り勘記録', build: build });
+  NT.tipsSections.push({ no: '10', title: '立替・割り勘記録', build: build });
 })(window);

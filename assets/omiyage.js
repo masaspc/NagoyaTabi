@@ -118,5 +118,5 @@
     return box;
   }
 
-  NT.tipsSections.push({ no: '04', title: '土産の買い物リスト', build: build });
+  NT.tipsSections.push({ no: '06', title: '土産の買い物リスト', build: build });
 })(window);
