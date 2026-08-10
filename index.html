@@ -23,6 +23,7 @@
     <h1><span class="jword">名古屋</span> <span class="jword">王道、</span><wbr><span class="jword">五食で</span><wbr><span class="jword">組む。</span>
       <span class="sub">東京 10:12 発 のぞみ ／ 11:48 名古屋着 ／ 復路 14:49 発</span></h1>
   </div></div>
+  <div class="wrap" id="weather-root"></div>
   <div class="wrap" id="itinerary-root"></div>
 </main>
 <footer><div class="wrap">
@@ -36,11 +37,13 @@
 <script src="assets/itinerary.js"></script>
 <script src="assets/recovery.js"></script>
 <script src="assets/situation.js"></script>
+<script src="assets/weather.js"></script>
 <script src="assets/swipe.js"></script>
 <script src="assets/fx.js"></script>
 <script>
   NT.mountNav('index.html');
   NT.renderItinerary();
+  NT.initWeather();
   NT.initSwipe('index.html');
   NT.fx.init();
 </script>
