@@ -572,6 +572,45 @@ section.tight{padding-top:0}
 .tips-body-wrap{padding:0 17px 18px;border-top:1px solid var(--rule)}
 .tips-body-wrap>*:first-child{margin-top:15px}
 
+/* 名古屋の天気（行程ページの先頭、assets/weather.js）。
+   行程より先に目に入る位置なので、面積を取らせない: 現在の1行 + 旅の2日を
+   1行ずつ + 行程に効く注意だけ。数字は等幅で桁を揃える。 */
+.wx{margin-bottom:0}
+.wx-head{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.wx-head h3{font-size:15px;flex:none}
+.wx-at{font-size:11px;color:var(--gray);flex:1}
+.btn.wx-reload{font-size:11.5px;padding:6px 11px;flex:none}
+.wx-now{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-top:9px}
+.wx-now-temp{font-size:26px;font-weight:700;color:var(--accent);line-height:1.2}
+.wx-now-code{font-size:14px;font-weight:500}
+.wx-now-feels{font-size:12px;color:var(--gray)}
+
+.wx-day{margin-top:11px;padding-top:10px;border-top:1px dotted var(--rule)}
+.wx-day-head{display:flex;align-items:baseline;gap:9px;flex-wrap:wrap;font-size:12.5px}
+.wx-day-label{font-weight:700;flex:none}
+.wx-day-code{color:var(--gray)}
+.wx-day-temp{margin-left:auto;white-space:nowrap}
+/* 猛暑の色分け。--kin/--miso は既存のバッジと同じ2段階に揃える */
+.wx-day-temp.warn{color:var(--kin);font-weight:700}
+.wx-day-temp.danger{color:var(--miso);font-weight:700}
+.wx-day-p{white-space:nowrap;color:var(--gray)}
+.wx-day-p.hi{color:var(--miso);font-weight:700}
+/* 時間帯の降水確率。横に溢れる端末では、ページごとではなくこの帯だけを流す */
+.wx-hours{display:flex;gap:14px;margin-top:6px;overflow-x:auto;
+  -webkit-overflow-scrolling:touch;padding-bottom:2px}
+.wx-h{display:flex;flex-direction:column;align-items:center;flex:none;min-width:38px}
+.wx-h-t{font-size:10.5px;color:var(--gray)}
+.wx-h-p{font-size:12.5px}
+.wx-h-p.hi{color:var(--miso);font-weight:700}
+/* 助言1件 = 本文 + 操作の行。押せるものは本文に混ぜず、必ず下の行にまとめる
+   （本文に流し込むと「…してください。」の直後で折り返してボタンだけが
+   次の行に取り残される）。a.btn にも全体ルールの min-height:44px が効く */
+.wx-adv{margin-top:10px}
+.wx-actrow{display:flex;flex-wrap:wrap;gap:7px;margin-top:7px}
+.btn.wx-act{font-size:11.5px;padding:5px 11px;
+  display:inline-flex;align-items:center;text-decoration:none}
+.wx-src{border-top:1px dotted var(--rule);padding-top:8px;margin-top:11px}
+
 /* 出発前チェック（実用メモ 01）と 1泊2日の進め方（同 02）。
    チェックは <input type="checkbox"> ＋ <label>。行頭の全体ルール
    （button,select,.btn,a.btn の min-height:44px）は素の input と label を
@@ -631,6 +670,13 @@ section.tight{padding-top:0}
   header[data-nav], .theme-toggle, .btnrow, .plan-switch-row, .sit,
   .now-jump, .clock-bar, .btn, .rec-box, .om-row .btn, .gacha, .qr-card,
   .sum-card, .rec .btn, .btn.here, .btn.vis{ display:none !important; }
+
+  /* 天気は紙に落とした時点で過去のものになる。取得時刻が必ず添えてあるので
+     消しはしないが、行程を圧迫しない高さまで詰める（.btn の更新ボタンと
+     「雨モードにする」等は上の一括ルールで既に消えている） */
+  .wx{ break-inside:avoid; }
+  .wx-hours{ overflow:visible; gap:10pt; }
+  .wx-src{ font-size:8pt; }
 
   /* 土産の個数・宛先入力も操作物なので消す（.om-row .btn だけでは
      input 2つ（.om-qty/.om-who）が残ってしまうため、明示的に加える） */
