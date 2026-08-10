@@ -62,10 +62,25 @@
   /* 雨の記号が要るのは「傘が要るか」の一目判断だけなので、細かい区分は畳む */
   function isRainy(c) { return c >= 51 && c <= 99 && !(c >= 71 && c <= 77) && c !== 85 && c !== 86; }
 
-  /* ---- 保存（nt:weather） ---- */
+  /* ---- 保存（nt:weather） ----
+     取得できた内容はまずメモリ（mem）に置き、localStorage への書き込みは
+     「次に開いたときのため」の best-effort として扱う。
+
+     core.js の NT.set は容量超過やプライベートモードの失敗を黙って握りつぶす
+     設計なので、保存だけを唯一の情報源にすると、**取得に成功しているのに
+     localStorage が書けない端末では画面が「まだ取得していません」のまま
+     固まる**（更新を押しても同じことが起きる）。このサイトは名物の写真を
+     IndexedDB へ逃がすほど localStorage の容量に余裕がない前提で作ってあり、
+     書き込み失敗は十分あり得る。表示はメモリ側で必ず成り立たせる。 */
+  var mem = null;
+
+  function valid(c) { return (c && c.at && c.wx) ? c : null; }
   function cached() {
-    var c = NT.get('weather', null);
-    return (c && c.at && c.wx) ? c : null;
+    return valid(mem) || valid(NT.get('weather', null));
+  }
+  function remember(rec) {
+    mem = rec;
+    NT.set('weather', rec);   /* 失敗しても mem があるので表示は壊れない */
   }
 
   /* 応答を旅の2日ぶんに畳む。プランのどちらでも日付は同じ（8/11・8/12）だが、
@@ -157,9 +172,8 @@
         return r.json();
       })
       .then(function (j) {
-        var wx = distill(j);
-        var rec = { at: nowMs(), wx: wx };
-        NT.set('weather', rec);
+        var rec = { at: nowMs(), wx: distill(j) };
+        remember(rec);
         state.loading = false;
         NT.renderWeather();
         return rec;
@@ -175,9 +189,22 @@
   };
 
   /* ---- 描画 ---- */
-  function fmtAt(ms) {
-    var d = new Date(ms);
-    return ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2);
+  /* 「いつ時点の内容か」の表示。時刻だけ（'23:35 時点'）にしてはいけない——
+     8/11の夜に取った内容を8/12の朝に圏外で開くと、前夜の観測が今朝のものに
+     見えてしまう。日をまたいでいれば日付を、1時間以上経っていれば経過時間を
+     必ず添えて、古いものを今のものと読み違えられないようにする。 */
+  function stamp(ms) {
+    var d = new Date(ms), n = new Date();
+    var hm = ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2);
+    var sameDay = d.getFullYear() === n.getFullYear()
+      && d.getMonth() === n.getMonth() && d.getDate() === n.getDate();
+    var s = (sameDay ? '' : (d.getMonth() + 1) + '/' + d.getDate() + ' ') + hm + ' 時点';
+    var mins = Math.floor((n.getTime() - ms) / 60000);
+    if (mins >= 60) {
+      var hrs = Math.floor(mins / 60);
+      s += hrs >= 24 ? '（' + Math.floor(hrs / 24) + '日以上前）' : '（約' + hrs + '時間前）';
+    }
+    return s;
   }
   function deg(v) { return (v === null || v === undefined) ? '—' : Math.round(v) + '℃'; }
   function pct(v) { return (v === null || v === undefined) ? '—' : Math.round(v) + '%'; }
@@ -319,7 +346,7 @@
     return NT.el('div', { class: 'wx-head' }, [
       NT.el('h3', { text: '名古屋の天気' }),
       NT.el('span', { class: 'wx-at mono',
-        text: rec ? fmtAt(rec.at) + ' 時点' : '' }),
+        text: rec ? stamp(rec.at) : '' }),
       btn
     ]);
   }
@@ -356,7 +383,7 @@
          古い予報を今の予報と誤読させないための一行 */
       if (state.error) {
         card.appendChild(NT.el('p', { class: 'notice warn',
-          text: state.error + '。以下は ' + fmtAt(rec.at) + ' 時点の内容です。' }));
+          text: state.error + '。以下は ' + stamp(rec.at) + 'の内容です。' }));
       }
       if (rec.wx.days.length) {
         rec.wx.days.forEach(function (d) { card.appendChild(dayRow(d)); });
