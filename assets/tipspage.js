@@ -111,24 +111,21 @@
           '熱田神宮は樹齢1000年超の大楠で木陰が濃く、真夏でも歩ける例外'
         ].map(function (t) { return NT.el('li', { text: t }); }))
       ]),
-      NT.el('div', { class: 'card' }, [
-        NT.el('h3', { text: '持ち物' }),
-        NT.el('ul', { class: 'triv' }, [
-          'モバイルバッテリー（このサイトを見続けるので消耗が早い）',
-          '現金（大須の個人店と屋台はカード非対応が残る）',
-          '折りたたみ傘（日傘兼用）',
-          'ぴよりんを買うなら保冷バッグ'
-        ].map(function (t) { return NT.el('li', { text: t }); }))
-      ])
+      /* 持ち物そのものは 01「出発前チェック」（assets/prep.js）が
+         チェックリストとして持つ。ここに短い一覧を重ねて置くと、
+         片方だけ直したときに食い違うので、案内だけを置いて実体は持たない。 */
+      NT.el('p', { class: 'notice',
+        text: '暑さに効く持ち物（モバイルバッテリー・晴雨兼用の傘・塩分・替えのシャツなど）は、' +
+              '01「出発前チェック」のチェックリストにまとめてあります。' })
     ]);
   }
 
   NT.tipsSections.push(
-    { no: '01', title: '営業時間・定休日', build: hoursTable },
-    { no: '02', title: '移動の早見表',     build: transitTable },
-    { no: '03', title: '暑さ対策と持ち物', build: heatSection },
-    { no: '05', title: '地下鉄マップ',     build: function () { return NT.buildSubwayMap({}); } },
-    { no: '06', title: '同行者に渡す', build: function () {
+    { no: '03', title: '営業時間・定休日', build: hoursTable },
+    { no: '04', title: '移動の早見表',     build: transitTable },
+    { no: '05', title: '暑さ対策',         build: heatSection },
+    { no: '07', title: '地下鉄マップ',     build: function () { return NT.buildSubwayMap({}); } },
+    { no: '08', title: '同行者に渡す', build: function () {
       var url = location.href.replace(/[^/]*$/, '').replace(/\/$/, '') + '/index.html';
       var cv = NT.qrCanvas ? NT.qrCanvas(url, 6) : null;
       return NT.el('div', { class: 'card qr-card' }, [
@@ -144,20 +141,24 @@
 
   /* 節ごとの開閉状態。spotlist.js の openIds と同じ方式（モジュール変数を
      唯一の情報源にして、再描画をまたいでユーザーの開閉操作を保つ）。
-     このページは事業時間表を「11時半に栄で開く」使い方が主なので、既定で
-     開いているのは 01（営業時間・定休日）だけにする。他の節は目的があって
-     わざわざ開きに行く参考情報として畳んでおく。 */
-  var openIds = { '01': true };
+     このページは営業時間表を「11時半に栄で開く」使い方が主なので、既定で
+     開いているのは 03（営業時間・定休日）だけにする。他の節は目的があって
+     わざわざ開きに行く参考情報として畳んでおく。01・02（出発前チェック・
+     1泊2日の進め方）は旅の前に一度読むもので、現地で毎回開くものではないため
+     先頭に置きつつ畳んでおく。 */
+  var openIds = { '03': true };
 
   /* #tips-root を描き直す。再入可能（再描画しても節が重複しない）。
      各節は <details> にして、開いた節は再描画をまたいで開いたままにする
      （土産リストで個数を変えるたびに NT.renderTips() が丸ごと呼ばれるため、
      ここで状態を保たないと開いていた節が毎回閉じてしまう）。
 
-     no でソートしてから描く: 05（地下鉄マップ）は tipspage.js 内の push で
-     04（土産リスト、omiyage.js が tipspage.js の後に読み込まれて push する）
-     より前に配列へ積まれるため、push 順そのままだと表示順が 01,02,03,05,04 に
-     ずれる。読み込み順に依存させず番号順を保証するため、描画直前にソートする */
+     no でソートしてから描く: 07（地下鉄マップ）は tipspage.js 内の push で
+     06（土産リスト、omiyage.js が tipspage.js の後に読み込まれて push する）
+     より前に配列へ積まれるため、push 順そのままだと表示順が 03,04,05,07,06 に
+     ずれる。読み込み順に依存させず番号順を保証するため、描画直前にソートする。
+     no は必ず2桁のゼロ詰めにすること——文字列比較なので、'9' を使うと
+     '10' より後ろに並ぶ。 */
   NT.renderTips = function () {
     var root = NT.$('#tips-root');
     if (!root) return;

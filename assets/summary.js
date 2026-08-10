@@ -118,7 +118,7 @@
   };
 
   NT.tipsSections = NT.tipsSections || [];
-  NT.tipsSections.push({ no: '07', title: '旅のまとめ', build: function () {
+  NT.tipsSections.push({ no: '09', title: '旅のまとめ', build: function () {
     var end = NT.parseHM('14:49', '2026-08-12');
     if (NT.now() < end) {
       return NT.el('div', { class: 'card' }, [
