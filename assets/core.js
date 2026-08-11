@@ -159,7 +159,11 @@
     pokecen: 'chikagai',
     esca: 'chikagai',
     'konparu-meieki': 'kissa',
-    'kissa-tanaka': 'kissa'
+    'kissa-tanaka': 'kissa',
+    /* 朝のきしめん2軒。専用の線画は無いので、同じ「駅で食べるきしめん」である
+       住よしに当てている shinkansen（新幹線）を転用する */
+    'ekikama-taiko': 'shinkansen',
+    'ekikama-chuo': 'shinkansen'
   };
   NT.LANDMARK_FOR_FOOD = {
     hitsumabushi: 'hitsumabushi',

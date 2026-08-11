@@ -73,12 +73,16 @@
             } }
         ]},
         { date:'2026-08-12', label:'DAY 2 — 8/12 wed', items:[
-          { time:'08:00', title:'喫茶店のモーニング', spotId:'konparu-meieki', kind:'meal',
-            note:'名古屋駅地下メイチカのコンパル。8:00から。小倉トーストとゆで卵',
+          { time:'08:00', title:'きしめん｜驛釜きしめん 太閤通り', spotId:'ekikama-taiko',
+            kind:'hero', hero:'きしめん',
+            note:'名古屋うまいもん通り（太閤通口）。7:00開店・年中無休で改札の外なので、入場券も乗車券も要らず座って食べられる。' +
+                 '朝の時間帯はミニきしめんに天むすが付く朝の定食がある（内容と時間は 052-526-0147 で確認）',
             stay:50, minStay:25,
             alts:{
-              crowd:{ title:'大須のコンパル本店', spotId:'kissa-tanaka',
-                note:'えびフライサンドが名物。駅から離れる分すいている' }
+              crowd:{ title:'驛釜きしめん 中央通り', spotId:'ekikama-chuo',
+                note:'同じ驛釜の中央コンコース側。こちらも7:00から。地下鉄へ出るのが速い' },
+              rain:{ title:'そのまま驛釜きしめんへ', spotId:'ekikama-taiko',
+                note:'駅の建物の中なので、外へ出ずにたどり着ける' }
             } },
           { time:'09:40', title:'徳川美術館', spotId:'tokugawa', kind:'plain',
             note:'10:00開館。大曽根駅から徒歩15分か名鉄瀬戸線 森下駅から徒歩10分。' +
@@ -100,9 +104,13 @@
           { time:'13:15', title:'土産', spotId:'esca', kind:'plain',
             note:'エスカとタカシマヤ。ぴよりんは要冷蔵で崩れやすいので最後に買う',
             stay:50, minStay:25, hardDeadline:'14:35', deadlineWhy:'ホームへの移動を残す' },
-          { time:'14:20', title:'ホームの住よしできしめん', spotId:'sumiyoshi', kind:'meal',
-            note:'新幹線ホーム上の立ち食い。3〜5分で出るので発車前に収まる',
-            stay:15, minStay:8, hardDeadline:'14:45', deadlineWhy:'14:49発の乗車' },
+          /* 朝をきしめんにしたので、このコマは同じ品の2杯目になる。予定から外さず
+             残すが、「食べる前提」ではなく「時間が余ったら」に位置づけを下げてある
+             （ホーム上の立ち食いは3-5分で出るため、乗車前の時間調整として役に立つ） */
+          { time:'14:20', title:'ホームへ移動（住よしは時間が余れば）', spotId:'sumiyoshi', kind:'plain',
+            note:'朝にきしめんを食べているので、ここは無理に入れなくてよい。' +
+                 'ホーム上の立ち食いは3〜5分で出るため、余裕があれば2杯目を、なければそのまま乗車位置へ',
+            stay:15, minStay:5, hardDeadline:'14:45', deadlineWhy:'14:49発の乗車' },
           { time:'14:49', title:'名古屋発 のぞみ', kind:'move',
             note:'16:24 東京着', stay:95, minStay:95 }
         ]}
@@ -179,12 +187,16 @@
             } }
         ]},
         { date:'2026-08-12', label:'DAY 2 — 8/12 wed', items:[
-          { time:'08:00', title:'喫茶店のモーニング', spotId:'konparu-meieki', kind:'meal',
-            note:'名古屋駅地下メイチカのコンパル。8:00から。小倉トーストとゆで卵',
+          { time:'08:00', title:'きしめん｜驛釜きしめん 太閤通り', spotId:'ekikama-taiko',
+            kind:'hero', hero:'きしめん',
+            note:'名古屋うまいもん通り（太閤通口）。7:00開店・年中無休で改札の外なので、入場券も乗車券も要らず座って食べられる。' +
+                 '朝の時間帯はミニきしめんに天むすが付く朝の定食がある（内容と時間は 052-526-0147 で確認）',
             stay:50, minStay:25,
             alts:{
-              crowd:{ title:'大須のコンパル本店', spotId:'kissa-tanaka',
-                note:'えびフライサンドが名物。駅から離れる分すいている' }
+              crowd:{ title:'驛釜きしめん 中央通り', spotId:'ekikama-chuo',
+                note:'同じ驛釜の中央コンコース側。こちらも7:00から。地下鉄へ出るのが速い' },
+              rain:{ title:'そのまま驛釜きしめんへ', spotId:'ekikama-taiko',
+                note:'駅の建物の中なので、外へ出ずにたどり着ける' }
             } },
           { time:'09:40', title:'徳川美術館', spotId:'tokugawa', kind:'plain',
             note:'10:00開館。大曽根駅から徒歩15分か名鉄瀬戸線 森下駅から徒歩10分。' +
@@ -201,9 +213,13 @@
           { time:'13:15', title:'土産', spotId:'esca', kind:'plain',
             note:'矢場町→名古屋 徒歩含め20分。エスカとタカシマヤ。ぴよりんは要冷蔵で崩れやすいので最後に買う',
             stay:45, minStay:25, hardDeadline:'14:35', deadlineWhy:'ホームへの移動を残す' },
-          { time:'14:20', title:'ホームの住よしできしめん', spotId:'sumiyoshi', kind:'meal',
-            note:'新幹線ホーム上の立ち食い。3〜5分で出るので発車前に収まる',
-            stay:15, minStay:8, hardDeadline:'14:45', deadlineWhy:'14:49発の乗車' },
+          /* 朝をきしめんにしたので、このコマは同じ品の2杯目になる。予定から外さず
+             残すが、「食べる前提」ではなく「時間が余ったら」に位置づけを下げてある
+             （ホーム上の立ち食いは3-5分で出るため、乗車前の時間調整として役に立つ） */
+          { time:'14:20', title:'ホームへ移動（住よしは時間が余れば）', spotId:'sumiyoshi', kind:'plain',
+            note:'朝にきしめんを食べているので、ここは無理に入れなくてよい。' +
+                 'ホーム上の立ち食いは3〜5分で出るため、余裕があれば2杯目を、なければそのまま乗車位置へ',
+            stay:15, minStay:5, hardDeadline:'14:45', deadlineWhy:'14:49発の乗車' },
           { time:'14:49', title:'名古屋発 のぞみ', kind:'move',
             note:'16:24 東京着', stay:95, minStay:95 }
         ]}
