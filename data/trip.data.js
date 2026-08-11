@@ -73,24 +73,38 @@
             } }
         ]},
         { date:'2026-08-12', label:'DAY 2 — 8/12 wed', items:[
-          { time:'08:00', title:'喫茶店のモーニング', spotId:'konparu-meieki', kind:'meal',
-            note:'名古屋駅地下メイチカのコンパル。8:00から。小倉トーストとゆで卵',
+          { time:'08:00', title:'きしめん｜驛釜きしめん 太閤通り', spotId:'ekikama-taiko',
+            kind:'hero', hero:'きしめん',
+            note:'名古屋うまいもん通り（太閤通口）。7:00開店・年中無休で改札の外なので、入場券も乗車券も要らず座って食べられる。' +
+                 '朝の時間帯はミニきしめんに天むすが付く朝の定食がある（内容と時間は 052-526-0147 で確認）',
             stay:50, minStay:25,
             alts:{
-              crowd:{ title:'大須のコンパル本店', spotId:'kissa-tanaka',
-                note:'えびフライサンドが名物。駅から離れる分すいている' }
+              crowd:{ title:'驛釜きしめん 中央通り', spotId:'ekikama-chuo',
+                note:'同じ驛釜の中央コンコース側。こちらも7:00から。地下鉄へ出るのが速い' },
+              rain:{ title:'そのまま驛釜きしめんへ', spotId:'ekikama-taiko',
+                note:'駅の建物の中なので、外へ出ずにたどり着ける' }
             } },
-          { time:'09:40', title:'徳川美術館', spotId:'tokugawa', kind:'plain',
-            note:'10:00開館。大曽根駅から徒歩15分か名鉄瀬戸線 森下駅から徒歩10分。' +
-                 '夏季特別展「武芸 サムライ・アスリート」開催中。屋内なので猛暑日の逃げ場',
-            stay:95, minStay:50, hardDeadline:'16:30', deadlineWhy:'入館締切',
+          /* 8/11に行けなかったポケモンセンターを2日目の午前に回した（徳川美術館は取りやめ）。
+             開店が10:00なので、それより前に着いても入れない。朝食のあと荷物を
+             コインロッカーに預ける時間をここに挟んで、10:00ちょうどに着く形にしてある */
+          { time:'09:00', title:'荷物をコインロッカーへ（名古屋駅）', kind:'plain',
+            note:'チェックアウト後の荷物は名古屋駅に預ける。昼も土産も乗車もこの駅に戻ってくるので、' +
+                 'ホテルに置いたままにするより最後が速い。中央コンコースで空きが無ければエスカ側・ユニモール側へ回る',
+            stay:20, minStay:10 },
+          { time:'10:00', title:'ポケモンセンターナゴヤ', spotId:'pokecen', kind:'poke',
+            note:'開店10:00ちょうどを狙う。名古屋→栄（東山線）→矢場町（名城線）で乗換込み15分ほど。' +
+                 '矢場町駅4番出口から徒歩1分、名古屋PARCO東館2F（西館ではない）。' +
+                 'しゃちほこピカチュウはここ限定',
+            stay:80, minStay:40, hardDeadline:'11:40', deadlineWhy:'昼食と土産・乗車の時間を残す最終ライン',
             alts:{
-              crowd:{ title:'ノリタケの森', spotId:'noritake',
-                note:'名古屋駅から徒歩15分。移動が短いぶん昼に余裕が出る' }
+              crowd:{ title:'整理券が出ていたらPARCO館内で待つ', spotId:'pokecen',
+                note:'混雑時は入場整理券が配られる。番号の時間まで同じPARCOか隣の松坂屋で時間を潰せば、動かずに済む' },
+              rain:{ title:'そのままPARCOへ', spotId:'pokecen',
+                note:'矢場町駅から地下でPARCOに入れるので、雨でもほぼ濡れない' }
             } },
           { time:'12:00', title:'ひつまぶし｜まるや本店 名駅店', spotId:'maruya-esca',
             kind:'hero', hero:'ひつまぶし',
-            note:'エスカ地下街。年中無休で駅直結なので14:49発の日でも読み違えがない。' +
+            note:'矢場町→名古屋は乗換込み15分。エスカ地下街で、年中無休・駅直結なので14:49発の日でも読み違えがない。' +
                  '一杯目はそのまま、二杯目は薬味、三杯目は出汁',
             stay:60, minStay:35, hardDeadline:'14:00', deadlineWhy:'土産と乗車の時間を残す最終ライン',
             alts:{
@@ -100,9 +114,13 @@
           { time:'13:15', title:'土産', spotId:'esca', kind:'plain',
             note:'エスカとタカシマヤ。ぴよりんは要冷蔵で崩れやすいので最後に買う',
             stay:50, minStay:25, hardDeadline:'14:35', deadlineWhy:'ホームへの移動を残す' },
-          { time:'14:20', title:'ホームの住よしできしめん', spotId:'sumiyoshi', kind:'meal',
-            note:'新幹線ホーム上の立ち食い。3〜5分で出るので発車前に収まる',
-            stay:15, minStay:8, hardDeadline:'14:45', deadlineWhy:'14:49発の乗車' },
+          /* 朝をきしめんにしたので、このコマは同じ品の2杯目になる。予定から外さず
+             残すが、「食べる前提」ではなく「時間が余ったら」に位置づけを下げてある
+             （ホーム上の立ち食いは3-5分で出るため、乗車前の時間調整として役に立つ） */
+          { time:'14:20', title:'ホームへ移動（住よしは時間が余れば）', spotId:'sumiyoshi', kind:'plain',
+            note:'朝にきしめんを食べているので、ここは無理に入れなくてよい。' +
+                 'ホーム上の立ち食いは3〜5分で出るため、余裕があれば2杯目を、なければそのまま乗車位置へ',
+            stay:15, minStay:5, hardDeadline:'14:45', deadlineWhy:'14:49発の乗車' },
           { time:'14:49', title:'名古屋発 のぞみ', kind:'move',
             note:'16:24 東京着', stay:95, minStay:95 }
         ]}
@@ -179,31 +197,48 @@
             } }
         ]},
         { date:'2026-08-12', label:'DAY 2 — 8/12 wed', items:[
-          { time:'08:00', title:'喫茶店のモーニング', spotId:'konparu-meieki', kind:'meal',
-            note:'名古屋駅地下メイチカのコンパル。8:00から。小倉トーストとゆで卵',
+          { time:'08:00', title:'きしめん｜驛釜きしめん 太閤通り', spotId:'ekikama-taiko',
+            kind:'hero', hero:'きしめん',
+            note:'名古屋うまいもん通り（太閤通口）。7:00開店・年中無休で改札の外なので、入場券も乗車券も要らず座って食べられる。' +
+                 '朝の時間帯はミニきしめんに天むすが付く朝の定食がある（内容と時間は 052-526-0147 で確認）',
             stay:50, minStay:25,
             alts:{
-              crowd:{ title:'大須のコンパル本店', spotId:'kissa-tanaka',
-                note:'えびフライサンドが名物。駅から離れる分すいている' }
+              crowd:{ title:'驛釜きしめん 中央通り', spotId:'ekikama-chuo',
+                note:'同じ驛釜の中央コンコース側。こちらも7:00から。地下鉄へ出るのが速い' },
+              rain:{ title:'そのまま驛釜きしめんへ', spotId:'ekikama-taiko',
+                note:'駅の建物の中なので、外へ出ずにたどり着ける' }
             } },
-          { time:'09:40', title:'徳川美術館', spotId:'tokugawa', kind:'plain',
-            note:'10:00開館。大曽根駅から徒歩15分か名鉄瀬戸線 森下駅から徒歩10分。' +
-                 '夏季特別展「武芸 サムライ・アスリート」開催中。屋内なので猛暑日の逃げ場',
-            stay:85, minStay:50, hardDeadline:'16:30', deadlineWhy:'入館締切',
+          /* プランAと同じ差し替え。こちらは昼が矢場とん（矢場町）なので、
+             ポケモンセンターから徒歩3分でそのまま昼食に移れる */
+          { time:'09:00', title:'荷物をコインロッカーへ（名古屋駅）', kind:'plain',
+            note:'チェックアウト後の荷物は名古屋駅に預ける。土産も乗車もこの駅に戻ってくるので、' +
+                 'ホテルに置いたままにするより最後が速い。中央コンコースで空きが無ければエスカ側・ユニモール側へ回る',
+            stay:20, minStay:10 },
+          { time:'10:00', title:'ポケモンセンターナゴヤ', spotId:'pokecen', kind:'poke',
+            note:'開店10:00ちょうどを狙う。名古屋→栄（東山線）→矢場町（名城線）で乗換込み15分ほど。' +
+                 '矢場町駅4番出口から徒歩1分、名古屋PARCO東館2F（西館ではない）。' +
+                 'しゃちほこピカチュウはここ限定',
+            stay:95, minStay:40, hardDeadline:'11:35', deadlineWhy:'矢場とんの昼食に間に合わせる最終ライン',
             alts:{
-              crowd:{ title:'ノリタケの森', spotId:'noritake',
-                note:'名古屋駅から徒歩15分。移動が短いぶん昼に余裕が出る' }
+              crowd:{ title:'整理券が出ていたらPARCO館内で待つ', spotId:'pokecen',
+                note:'混雑時は入場整理券が配られる。番号の時間まで同じPARCOか隣の松坂屋で時間を潰せば、動かずに済む' },
+              rain:{ title:'そのままPARCOへ', spotId:'pokecen',
+                note:'矢場町駅から地下でPARCOに入れるので、雨でもほぼ濡れない' }
             } },
           { time:'11:45', title:'味噌カツ｜矢場とん 矢場町本店', spotId:'yabaton',
             kind:'hero', hero:'味噌カツ',
-            note:'大曽根→栄→矢場町。年中無休なので水曜でも確実。わらじとんかつ',
+            note:'PARCOから徒歩3分。年中無休なので水曜でも確実。わらじとんかつ',
             stay:55, minStay:35, hardDeadline:'13:30', deadlineWhy:'名古屋駅へ戻る時間を残す最終ライン' },
           { time:'13:15', title:'土産', spotId:'esca', kind:'plain',
             note:'矢場町→名古屋 徒歩含め20分。エスカとタカシマヤ。ぴよりんは要冷蔵で崩れやすいので最後に買う',
             stay:45, minStay:25, hardDeadline:'14:35', deadlineWhy:'ホームへの移動を残す' },
-          { time:'14:20', title:'ホームの住よしできしめん', spotId:'sumiyoshi', kind:'meal',
-            note:'新幹線ホーム上の立ち食い。3〜5分で出るので発車前に収まる',
-            stay:15, minStay:8, hardDeadline:'14:45', deadlineWhy:'14:49発の乗車' },
+          /* 朝をきしめんにしたので、このコマは同じ品の2杯目になる。予定から外さず
+             残すが、「食べる前提」ではなく「時間が余ったら」に位置づけを下げてある
+             （ホーム上の立ち食いは3-5分で出るため、乗車前の時間調整として役に立つ） */
+          { time:'14:20', title:'ホームへ移動（住よしは時間が余れば）', spotId:'sumiyoshi', kind:'plain',
+            note:'朝にきしめんを食べているので、ここは無理に入れなくてよい。' +
+                 'ホーム上の立ち食いは3〜5分で出るため、余裕があれば2杯目を、なければそのまま乗車位置へ',
+            stay:15, minStay:5, hardDeadline:'14:45', deadlineWhy:'14:49発の乗車' },
           { time:'14:49', title:'名古屋発 のぞみ', kind:'move',
             note:'16:24 東京着', stay:95, minStay:95 }
         ]}

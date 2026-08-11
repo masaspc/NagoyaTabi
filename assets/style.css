@@ -503,6 +503,12 @@ section.tight{padding-top:0}
   background:var(--bg);color:var(--fg);border:1px solid var(--rule);border-radius:2px;
   font-family:inherit}
 .rec-photo{width:100%;max-width:280px;border-radius:3px;margin-top:2px;display:block}
+/* 写真がまだ無い名物では record.js が <img> に hidden を付けて隠す。ところが
+   ブラウザ標準の [hidden]{display:none} は上の .rec-photo{display:block} に
+   詳細度で負けるため、hidden を付けても消えず、src の無い <img> が
+   「画像を読めません」のアイコンと代替テキストとして全カードに出ていた
+   （実機で確認）。hidden 側を明示して勝たせる。 */
+.rec-photo[hidden]{display:none}
 
 /* 土産の買い物リスト（Task 12）: カード = <details>。spot/food と同じ折りたたみ
    パターンだが、締切バッジ・数量・宛先・買った ボタンはすべて summary に置き、
