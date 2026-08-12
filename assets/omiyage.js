@@ -64,6 +64,9 @@
 
     var head = NT.el('div', { class: 'spot-head' }, [
       NT.el('span', { class: 'chev', 'aria-hidden': 'true' }),
+      /* 順位は畳んだままでも見えるよう summary 側に置く。駅で残り15分のとき、
+         開かずに上から順に買えるのがこのリストの主用途 */
+      o.rank ? NT.el('span', { class: 'om-rank mono', text: String(o.rank) }) : null,
       NT.el('h3', {}, [o.name,
         left !== null && left < 0 ? NT.el('span', { class: 'badge warn', text: '締切超過' }) : null,
         left !== null && left >= 0 && left < 60
@@ -77,6 +80,9 @@
     var summary = NT.el('summary', {}, [head, omRow]);
 
     var body = NT.el('div', { class: 'spot-body' }, [
+      o.why ? NT.el('h4', { text: 'なぜこの順位か' }) : null,
+      o.why ? NT.el('p', { class: 'food-why', text: o.why }) : null,
+      NT.el('h4', { text: 'どこで／気をつけること' }),
       NT.el('p', { class: 'where-note', text: o.where }),
       NT.el('p', { class: 'where-note', text: o.caution })
     ]);
@@ -113,8 +119,29 @@
           NT.renderTips();
         } }) : null
     ]);
-    var box = NT.el('div', {}, [head]);
-    NT.omiyage.forEach(function (o) { box.appendChild(card(o)); });
+    /* 順位の基準を先に読ませる。順位そのものより「なぜその並びか」が分かっていないと、
+       好みと食い違ったときに全部を無視することになる */
+    var rankNote = NT.el('div', { class: 'card' }, [
+      NT.el('h3', { text: '何から買うか' }),
+      NT.el('p', { class: 'food-why', text: NT.omiyageNote })
+    ]);
+
+    var howto = NT.el('div', { class: 'card' }, [
+      NT.el('h3', { text: '買う順番と段取り' }),
+      NT.el('ul', { class: 'triv' }, NT.omiyageHowto.map(function (h) {
+        return NT.el('li', {}, [
+          NT.el('strong', { text: h.title }),
+          NT.el('span', { class: 'howto-text', text: h.text })
+        ]);
+      }))
+    ]);
+
+    var box = NT.el('div', {}, [head, rankNote]);
+    /* 順位順に描く。データ側の並びに依存させない（rank が無いものは末尾） */
+    NT.omiyage.slice().sort(function (a, b) {
+      return (a.rank || 99) - (b.rank || 99);
+    }).forEach(function (o) { box.appendChild(card(o)); });
+    box.appendChild(howto);
     return box;
   }
 
