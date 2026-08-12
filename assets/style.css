@@ -117,6 +117,20 @@ header[data-nav]{
 .theme-toggle{background:none;border:1px solid rgba(199,154,60,.45);color:var(--kin-light);
   font-size:11px;padding:7px 9px;border-radius:2px;cursor:pointer;
   font-family:var(--font-mono);white-space:nowrap;min-height:44px}
+/* ページが6つ（＋テーマ切替）になったので、狭い端末では文字と余白を一段落とす。
+   タップ高さの44pxは触らない——横に詰めても、縦の当たり判定は下限のまま保つ。
+   これを入れないと iPhone SE 級（375px以下）でナビが横にはみ出す（実測） */
+@media (max-width:400px){
+  .nav{gap:1px;padding:0 10px}
+  .nav a{font-size:11px;padding:13px 0}
+  .theme-toggle{font-size:10px;padding:7px 6px}
+}
+@media (max-width:340px){
+  .nav a{font-size:10px}
+  /* ここまで狭いとテーマ名まで入らない。記号だけ残して幅を空ける */
+  .theme-toggle{font-size:0;padding:7px 8px}
+  .theme-toggle::before{content:'◐';font-size:13px}
+}
 
 /* ページヘッダー（Task 28）。--head-bg → --rokusho-deep のグラデーション。
    --rokusho-deep はテーマで再定義されない定数（常に #0D2B28 の暗緑）なので、
@@ -577,6 +591,31 @@ section.tight{padding-top:0}
 .tips-det summary h2{font-size:16.5px}
 .tips-body-wrap{padding:0 17px 18px;border-top:1px solid var(--rule)}
 .tips-body-wrap>*:first-child{margin-top:15px}
+
+/* グッズページ（assets/goodspage.js）。店内で片手で使うので、名所・名物と違って
+   カードは畳まない。順位の数字を左に大きく置いて、上から順に潰していけるようにする。 */
+.goods{margin-bottom:10px}
+.goods.done{opacity:.62;border-left:4px solid var(--rokusho)}
+.goods-head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.goods-rank{flex:none;font-size:22px;font-weight:700;color:var(--kin);line-height:1.1;
+  min-width:24px}
+.goods-head h3{flex:1;font-size:15.5px;min-width:130px}
+.goods-head h3 .badge{margin-left:7px}
+.goods-head .btn.eat{margin-left:auto}
+.goods-price{font-size:12px;color:var(--gray);margin:4px 0 0 34px}
+.goods .food-what,.goods .food-why,.goods .where-note,.goods h4{margin-left:34px}
+.goods h4{font-size:12px;color:var(--gray);margin-top:11px;margin-bottom:2px;
+  font-family:var(--font-sans);font-weight:700;letter-spacing:.04em}
+.goods-count{margin-left:auto;font-size:12px;color:var(--accent);font-weight:700}
+/* 段取りの箇条書き: 見出しを行頭に立てて、説明を次の行へ落とす */
+.howto-text{display:block;color:var(--gray);font-size:12.5px;margin-top:1px}
+
+/* 変更履歴（assets/changelog.js）。「いつ・現地かどうか」を先に見せる */
+.chg{margin-bottom:10px}
+.chg-head{display:flex;align-items:center;gap:8px;margin-bottom:5px}
+.chg-at{font-size:11.5px;color:var(--gray)}
+.chg h3{font-size:14.5px;line-height:1.55}
+.chg .where-note{margin-top:7px;padding-top:7px;border-top:1px dotted var(--rule)}
 
 /* 名古屋の天気（行程ページの先頭、assets/weather.js）。
    行程より先に目に入る位置なので、面積を取らせない: 現在の1行 + 旅の2日を

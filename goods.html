@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>メモ｜名古屋 王道 2026.8.11-12</title>
+<title>グッズ｜名古屋 王道 2026.8.11-12</title>
 <meta name="theme-color" content="#0D2B28">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -14,41 +14,29 @@
 </head>
 <body>
 <header data-nav></header>
-<main data-page="tips">
+<main data-page="goods">
   <div class="page-head"><div class="wrap">
-    <div class="eyebrow">plan / 2026.08.11 tue - 08.12 wed</div>
-    <h1>実用メモ
-      <span class="sub"><span class="jword">持ち物・進め方・</span><wbr><span class="jword">営業時間・移動・土産</span></span></h1>
+    <div class="eyebrow">pokemon center nagoya / 2026.08.12</div>
+    <h1><span class="jword">ポケモンセンターで、</span><wbr><span class="jword">何を買うか。</span>
+      <span class="sub"><span class="jword">ナゴヤ限定を上から順に。</span><wbr><span class="jword">持ち帰れる重さで並べた</span></span></h1>
   </div></div>
-  <div class="wrap" id="tips-root"></div>
+  <div class="wrap" id="goods-root"></div>
 </main>
 <footer><div class="wrap">
-  営業時間は 2026-08-08 時点の確認。「要確認」の店は出発前に電話で確かめてください。
+  価格は2024年10月の開店時に確認された税込価格。限定品は入れ替わるので、店内の「ポケモンセンターナゴヤ限定」の棚で確かめてください。
 </div></footer>
 <script src="assets/core.js"></script>
 <script src="assets/art.js"></script>
 <script src="data/spots.data.js"></script>
-<script src="data/foods.data.js"></script>
 <script src="data/trip.data.js"></script>
-<script src="data/transit.data.js"></script>
-<script src="data/omiyage.data.js"></script>
-<script src="data/prep.data.js"></script>
-<script src="data/changelog.data.js"></script>
-<script src="assets/record.js"></script>
-<script src="assets/subwaymap.js"></script>
-<script src="assets/qr.js"></script>
-<script src="assets/tipspage.js"></script>
-<script src="assets/prep.js"></script>
-<script src="assets/changelog.js"></script>
-<script src="assets/omiyage.js"></script>
-<script src="assets/summary.js"></script>
-<script src="assets/expenses.js"></script>
+<script src="data/goods.data.js"></script>
+<script src="assets/goodspage.js"></script>
 <script src="assets/swipe.js"></script>
 <script src="assets/fx.js"></script>
 <script>
-  NT.mountNav('tips.html');
-  NT.renderTips();
-  NT.initSwipe('tips.html');
+  NT.mountNav('goods.html');
+  NT.renderGoods();
+  NT.initSwipe('goods.html');
   NT.fx.init();
 </script>
 <script>

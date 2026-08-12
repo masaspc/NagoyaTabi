@@ -1,9 +1,9 @@
 /* 一覧は手で並べる。ビルドがないため自動生成しない。
    ファイルを足したら PRECACHE と VERSION の両方を更新すること。 */
-var VERSION = 'nt-v18';
+var VERSION = 'nt-v19';
 var PRECACHE = [
   './',
-  'index.html', 'spots.html', 'gourmet.html', 'tips.html', 'play.html',
+  'index.html', 'spots.html', 'gourmet.html', 'tips.html', 'play.html', 'goods.html',
   'manifest.webmanifest',
   'assets/style.css',
   'assets/core.js',
@@ -19,6 +19,8 @@ var PRECACHE = [
   'assets/gourmetlist.js',
   'assets/record.js',
   'assets/tipspage.js',
+  'assets/changelog.js',
+  'assets/goodspage.js',
   'assets/prep.js',
   'assets/omiyage.js',
   'assets/summary.js',
@@ -37,6 +39,8 @@ var PRECACHE = [
   'data/transit.data.js',
   'data/omiyage.data.js',
   'data/prep.data.js',
+  'data/changelog.data.js',
+  'data/goods.data.js',
   'data/quiz.data.js',
   'data/missions.data.js'
 ];
