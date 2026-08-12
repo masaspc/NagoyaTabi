@@ -89,7 +89,10 @@
     { file: 'spots.html', label: '名所' },
     { file: 'gourmet.html', label: '名物' },
     { file: 'tips.html', label: 'メモ' },
-    { file: 'play.html', label: 'あそび' }
+    { file: 'play.html', label: 'あそび' },
+    /* 8/12にポケモンセンターへ行くと決まってから足したページ。ナビが6つになるので
+       .nav の文字サイズを狭い端末向けに一段落としてある（style.css の 360px 以下の指定） */
+    { file: 'goods.html', label: 'グッズ' }
   ];
 
   /* ---- テーマ。auto / light / dark の3状態を回す ---- */
