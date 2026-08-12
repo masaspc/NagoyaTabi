@@ -36,6 +36,7 @@
       ],
       highlight:'丼の中身——カツを箸で割った瞬間にとろける半熟卵と、じっくり煮込んだ赤味噌だれの照り',
       photo:'席についたら丼を斜め上から。湯気が立つうちに手前にカツ、奥にねぎをちらして撮ると立体感が出る',
+      entry:{ kind:'queue', note:'1店舗のみで席数が少なく、店先で順番待ちの列に並ぶ。予約可否は未確認——行くなら電話で確かめるか開店前後を狙う', checkedVia:'official-site', checkedOn:'2026-08-08' },
       verifiedOn:'2026-08-08', unverified:true },
 
     { id:'atsuta', name:'熱田神宮', area:'熱田', category:'神社',
@@ -68,7 +69,7 @@
       ],
       highlight:'信長塀——本宮手前の参道右側にある、瓦と土を交互に積んだ築地塀。日本三大土塀の一つに数えられる',
       photo:'正門の大鳥居をくぐってすぐの参道——両側の楠並木越しに奥の本宮方向をまっすぐ写すと、深い杜の雰囲気が出る',
-      entry:{ kind:'free', note:'境内は24時間自由。宝物館だけ有料（9:00-16:30）', checkedOn:'2026-08-12' },
+      entry:{ kind:'free', note:'境内は24時間自由。宝物館だけ有料（9:00-16:30）', checkedOn:'2026-08-12', checkedVia:'official-site' },
       verifiedOn:'2026-08-08', unverified:false },
 
     { id:'pokecen', name:'ポケモンセンターナゴヤ', area:'栄・大須', category:'ショッピング',
@@ -103,7 +104,7 @@
       ],
       highlight:'しゃちほこピカチュウのグッズ——名古屋城の金鯱をモチーフにした、この店舗ならではの地域限定アイテム',
       photo:'入口の看板・ロゴ前——店名とピカチュウが一緒に入るアングルで撮ると来店の記念写真になる',
-      entry:{ kind:'ticket', note:'混雑期は入場に当日整理券が要る。8月は土日祝に加えてお盆の混雑予想日（8/10-16など）が対象で、水曜の8/12も含まれていた。配布は9:00から（開店の1時間前）。対象日は公式のお知らせで事前に告知される', url:'https://shop.pokemon.co.jp/ja/shop/pokemoncenter-nagoya/news/202607/000439.html', checkedOn:'2026-08-12' },
+      entry:{ kind:'ticket', note:'混雑期は入場に当日整理券が要る。8月は土日祝に加えてお盆の混雑予想日（8/10-16など）が対象で、水曜の8/12も含まれていた。配布は9:00から（開店の1時間前）。対象日は公式のお知らせで事前に告知される', url:'https://shop.pokemon.co.jp/ja/shop/pokemoncenter-nagoya/news/202607/000439.html', checkedOn:'2026-08-12', checkedVia:'official-news' },
       verifiedOn:'2026-08-08', unverified:false },
 
     { id:'osu', name:'大須商店街', area:'栄・大須', category:'商店街',
@@ -133,7 +134,7 @@
       ],
       highlight:'万松寺のからくり人形「信長」——一定時間ごとに動き出す等身大のからくり仕掛け（実演時間は現地掲示で確認）',
       photo:'万松寺前のからくり時計を正面から見上げる構図。実演中は火を吹く演出とともに撮ると迫力が出る',
-      entry:{ kind:'free', note:'アーケード商店街。入場の仕組みは無い', checkedOn:'2026-08-12' },
+      entry:{ kind:'free', note:'アーケード商店街。入場の仕組みは無い', checkedOn:'2026-08-12', checkedVia:'official-site' },
       verifiedOn:'2026-08-08', unverified:false },
 
     { id:'nagoyajo', name:'名古屋城', area:'名古屋城', category:'城',
@@ -165,6 +166,7 @@
       ],
       highlight:'金鯱——大天守の屋根に輝く名古屋城の象徴。夜はライトアップされ、周辺からでもよく見える',
       photo:'西之丸から天守を見上げる位置——盆踊りの提灯明かりと合わせて夜の天守を撮れる',
+      entry:{ kind:'free', note:'観覧券500円を窓口で購入。事前手配は不要。ただし夏まつりの催し（大盆踊りなど）に別の入場方法があるかは未確認', checkedVia:'official-site', checkedOn:'2026-08-08' },
       verifiedOn:'2026-08-08', unverified:false },
 
     { id:'shachihoko-shokudo', name:'鯱食堂', area:'名古屋城', category:'屋台・グルメ',
@@ -193,6 +195,7 @@
       ],
       highlight:'かき氷——夏まつり期間限定の屋台グルメの定番。盆踊りの太鼓の音を聞きながら涼める',
       photo:'屋台の提灯と盆踊りのやぐらを一緒にフレームへ。夜の縁日らしい雰囲気が撮れる',
+      entry:{ kind:'free', note:'名古屋城の入城券があれば入れる城内の飲食ブース。各ブースで並ぶ', checkedVia:'official-site', checkedOn:'2026-08-08' },
       verifiedOn:'2026-08-08', unverified:false },
 
     { id:'gomitori', name:'伍味酉 本店', area:'栄・大須', category:'食事',
@@ -222,6 +225,7 @@
       ],
       highlight:'店内を埋め尽くす骨董品の数々——壁も天井も隙間なく飾られた異色の内装は、料理を待つ間に見て回るだけで楽しめる',
       photo:'席から店内を見渡す角度で、天井近くまで並ぶ骨董品と提灯を一緒に収める',
+      entry:{ kind:'queue', note:'17:00-05:00 年中無休。店頭で並ぶ。予約可否は未確認', checkedVia:'official-site', checkedOn:'2026-08-08' },
       verifiedOn:'2026-08-08', unverified:false },
 
     { id:'tokugawa', name:'徳川美術館', area:'覚王山・東部', category:'博物館',
@@ -281,6 +285,7 @@
       ],
       highlight:'3杯目、だしをかけた「ひつまぶし茶漬け」——薬味とだしがしみたご飯とうなぎが、1杯目とは違う味わいになる',
       photo:'丼の蓋を開けた直後、湯気が立つうなぎの断面を真上から。備長炭焼きの焼き色が写真映えする',
+      entry:{ kind:'queue', note:'エスカ地下街。店頭で並ぶ。予約可否は未確認', checkedVia:'official-site', checkedOn:'2026-08-08' },
       verifiedOn:'2026-08-08', unverified:false },
 
     { id:'sumiyoshi', name:'住よし', area:'名古屋駅', category:'食事',
@@ -309,7 +314,7 @@
       ],
       highlight:'花かつおがたっぷり乗った濃口だし——立ち食いとは思えない出汁の香りが、新幹線を待つわずかな時間を締めくくる',
       photo:'カウンター越しに丼を真上から。花かつおが湯気で揺れる様子ごと撮ると立ち食いらしい臨場感が出る',
-      entry:{ kind:'free', note:'ホーム上の立ち食い。改札内なので入場券か乗車券が要る', checkedOn:'2026-08-12' },
+      entry:{ kind:'free', note:'ホーム上の立ち食い。改札内なので入場券か乗車券が要る', checkedOn:'2026-08-12', checkedVia:'official-site' },
       verifiedOn:'2026-08-08', unverified:false },
 
     /* 朝のきしめん2軒（8/12の朝食）。住よしと違ってどちらも改札の外なので、
@@ -346,6 +351,7 @@
       ],
       highlight:'朝いちばんの出汁の香り——花かつおが湯気で立ち上がる一杯を、立ったままではなく座って味わえる',
       photo:'朝の定食なら、きしめんと天むすを並べて斜め上から。丼の縁と天むすの海苔が入る高さが収まりがいい',
+      entry:{ kind:'queue', note:'駅構内の店。券売機・店頭で注文して席に着く。予約は取らない', checkedVia:'onsite', checkedOn:'2026-08-12' },
       verifiedOn:'2026-08-11', unverified:false },
 
     { id:'ekikama-chuo', name:'驛釜きしめん 中央通り', area:'名古屋駅', category:'食事',
@@ -373,6 +379,7 @@
       ],
       highlight:'中央コンコースの人の流れのすぐ脇で、朝いちばんの一杯を座って食べる',
       photo:'丼を真上から。花かつおが湯気で揺れているうちに撮る',
+      entry:{ kind:'queue', note:'駅構内の店。予約は取らない', checkedVia:'official-site', checkedOn:'2026-08-12' },
       verifiedOn:'2026-08-11', unverified:false },
 
     /* ===== 代替・周辺 20件 ===== */
@@ -449,6 +456,7 @@
       ],
       highlight:'ひつまぶしを百貨店内で——単独店舗に比べ行列が短く、落ち着いて座れることが多い',
       photo:'丼の蓋を開けた直後、湯気の立つうなぎを真上から',
+      entry:{ kind:'queue', note:'松坂屋館内。行列必至で、待ち時間は館内で潰せる。予約可否は未確認', checkedVia:'official-site', checkedOn:'2026-08-08' },
       verifiedOn:'2026-08-08', unverified:true },
 
     { id:'yabaton', name:'矢場とん 矢場町本店', area:'栄・大須', category:'食事',
@@ -472,6 +480,7 @@
       ],
       highlight:'わらじとんかつ——皿からはみ出すほど大きい看板メニュー。名前どおり草履サイズの迫力がある',
       photo:'運ばれてきた直後、皿からはみ出すとんかつを横から。皿の縁と比較すると大きさが伝わる',
+      entry:{ kind:'queue', note:'店頭で並ぶ。予約可否は未確認', checkedVia:'official-site', checkedOn:'2026-08-08' },
       verifiedOn:'2026-08-08', unverified:false },
 
     { id:'suzuya', name:'すゞ家', area:'栄・大須', category:'食事',
@@ -497,6 +506,7 @@
       ],
       highlight:'味噌串カツ——一皿のとんかつより気軽に、商店街歩きの合間につまめるサイズ感',
       photo:'カウンター越しに串カツが並ぶ皿を斜め上から',
+      entry:{ kind:'queue', note:'大須の店頭で並ぶ。公式サイトが無く、予約可否・混雑期の扱いは確認できていない。行くなら現地の店頭で確かめる', checkedVia:'official-site', checkedOn:'2026-08-08', url:'https://osu.nagoya/' },
       verifiedOn:'2026-08-08', unverified:false },
 
     { id:'tonpachi', name:'とん八', area:'その他', category:'食事',
@@ -547,6 +557,7 @@
       ],
       highlight:'幻の手羽先——こしょうを効かせた辛口の下味が、他の手羽先専門店と違う個性になっている',
       photo:'皿に山盛りになった手羽先を真上から。骨の並びごと撮ると量感が伝わる',
+      entry:{ kind:'queue', note:'店頭で並ぶ。予約可否は未確認', checkedVia:'official-site', checkedOn:'2026-08-08' },
       verifiedOn:'2026-08-08', unverified:false },
 
     { id:'furaibou', name:'風来坊 栄店', area:'栄・大須', category:'食事',
@@ -748,6 +759,7 @@
       ],
       highlight:'水の宇宙船——ガラス張りの屋根の上に水を張った、栄のシンボルとなっている構造物。歩いて渡れる',
       photo:'水盤の上から名古屋テレビ塔方向を見る構図。水面に空やテレビ塔が映り込む',
+      entry:{ kind:'free', note:'公共空間。入場の仕組みは無い', checkedVia:'official-site', checkedOn:'2026-08-08' },
       verifiedOn:'2026-08-08', unverified:false },
 
     { id:'sunshine-sakae', name:'サンシャインサカエ', area:'栄・大須', category:'商業施設',
@@ -825,6 +837,7 @@
       ],
       highlight:'豊田自動織機の実機デモンストレーション——動く自動織機を間近で見られる、数少ない産業遺産の実演',
       photo:'稼働中の織機を正面から。シャトルが動く瞬間を狙うと躍動感のある一枚になる',
+      entry:{ kind:'free', note:'窓口で観覧券を購入。事前手配は不要。企画展に別枠が出るかは未確認', checkedVia:'official-site', checkedOn:'2026-08-08' },
       verifiedOn:'2026-08-08', unverified:false },
 
     { id:'kinshachi-yokocho', name:'金シャチ横丁', area:'名古屋城', category:'屋台街',
@@ -850,6 +863,7 @@
       ],
       highlight:'義直ゾーンと宗春ゾーンの食べ比べ——正門側と東門側で店の顔ぶれが違うので、両方回ると名古屋めしを一通り試せる',
       photo:'通りの入口から奥まで店の看板が並ぶ様子を一枚に。夕方以降は提灯に灯りが入り雰囲気が出る',
+      entry:{ kind:'free', note:'屋外の飲食街。入場の仕組みは無い（各店で並ぶ）', checkedVia:'official-site', checkedOn:'2026-08-08' },
       verifiedOn:'2026-08-08', unverified:false },
 
     { id:'esca', name:'エスカ地下街', area:'名古屋駅', category:'商業施設',
@@ -876,7 +890,7 @@
       ],
       highlight:'新幹線口直結の立地——荷物を持ったまま土産と食事を一度に済ませられる、復路直前の最終ポイント',
       photo:'地下街の通路から店の看板が並ぶ様子を撮る。新幹線改札への案内サインと一緒に入れると位置関係が伝わる',
-      entry:{ kind:'free', note:'地下街。入場の仕組みは無い', checkedOn:'2026-08-12' },
+      entry:{ kind:'free', note:'地下街。入場の仕組みは無い', checkedOn:'2026-08-12', checkedVia:'official-site' },
       verifiedOn:'2026-08-08', unverified:false }
   ];
 
