@@ -16,9 +16,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          # VERSION の据え置きを見るには比較元の履歴が要る。既定の1コミットだけの
+          # チェックアウトでは origin/main が存在せず、検査が黙って素通りしていた
+          # （実際のCIログで「比較元が見つからないため VERSION の確認は飛ばした」を確認）。
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
       # ビルドも依存も無いリポジトリなので、インストールする物は無い
       - name: データの構文
         run: |
@@ -28,4 +33,9 @@ jobs:
       - name: 入場方法
         run: node tools/check-entry.mjs
       - name: Service Worker のキャッシュ一覧
+        env:
+          # 比較元を明示する。PR なら取り込み先の先端、push なら1つ前。
+          # main への push では origin/main が HEAD と同じになり差分が空になるため、
+          # ref 探索まかせにはしない。
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
         run: node tools/check-precache.mjs

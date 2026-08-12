@@ -56,9 +56,29 @@ for (const plan of NT.plans) {
 const tripStart = NT.plans
   .flatMap(p => p.days.map(d => d.date))
   .sort()[0];
+const tripStartDate = parseDate(tripStart);
+if (!tripStartDate) {
+  console.error(`ERROR 行程の日付 ${JSON.stringify(tripStart)} が読めない`);
+  process.exit(1);
+}
 
-function daysBefore(dateISO, baseISO) {
-  return Math.round((new Date(baseISO) - new Date(dateISO)) / 86400000);
+/* 形だけでなく、暦として実在する日かまで見る。'2026-99-99' は正規表現を通ってしまい、
+   new Date() が Invalid Date になり、age が NaN になる。NaN > MAX_AGE_DAYS は false なので
+   **打ち間違えた日付ほど「新しい確認」として通ってしまう**（レビューで指摘されて気づいた）。 */
+function parseDate(s) {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s || '');
+  if (!m) return null;
+  const d = new Date(`${s}T00:00:00Z`);
+  if (Number.isNaN(d.getTime())) return null;
+  /* 2026-02-30 のような繰り上がりを弾く（Dateは3/2として受け入れてしまう） */
+  if (d.getUTCFullYear() !== +m[1] || d.getUTCMonth() + 1 !== +m[2] || d.getUTCDate() !== +m[3]) {
+    return null;
+  }
+  return d;
+}
+
+function daysBefore(from, to) {
+  return Math.round((to - from) / 86400000);
 }
 
 for (const [id, where] of referenced) {
@@ -80,10 +100,12 @@ for (const [id, where] of referenced) {
     errors.push(`${at}: entry.checkedVia が ${JSON.stringify(e.checkedVia)}。` +
       `${VIA.join(' / ')} のいずれかで、実際に見たものを書く`);
   }
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(e.checkedOn || '')) {
-    errors.push(`${at}: entry.checkedOn が無い（YYYY-MM-DD）`);
+  const checked = parseDate(e.checkedOn);
+  if (!checked) {
+    errors.push(`${at}: entry.checkedOn が ${JSON.stringify(e.checkedOn)}。` +
+      `実在する日付を YYYY-MM-DD で書くこと`);
   } else {
-    const age = daysBefore(e.checkedOn, tripStart);
+    const age = daysBefore(checked, tripStartDate);
     if (age > MAX_AGE_DAYS) {
       errors.push(`${at}: 確認が ${e.checkedOn}（旅の${age}日前）で古い。` +
         `${MAX_AGE_DAYS}日以内に確認し直すこと——整理券や抽選の告知は旅の直前に出る`);
