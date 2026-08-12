@@ -616,6 +616,13 @@ section.tight{padding-top:0}
 .chg-at{font-size:11.5px;color:var(--gray)}
 .chg h3{font-size:14.5px;line-height:1.55}
 .chg .where-note{margin-top:7px;padding-top:7px;border-top:1px dotted var(--rule)}
+/* 「次はこうする」= 変更履歴のいちばんの値打ち。名所の「ここだけは見る」
+   （.spot-highlight）と同じ金枠で、他の本文より視覚的な重みを持たせる */
+.chg-lesson{border:1px solid var(--kin);border-radius:3px;margin-top:9px;padding:9px 11px;
+  background:linear-gradient(160deg,rgba(199,154,60,.16),rgba(199,154,60,0))}
+.chg-lesson-label{display:block;font-size:10.5px;letter-spacing:.14em;color:var(--kin);
+  font-weight:700;margin-bottom:3px}
+.chg-lesson-text{margin:0;font-size:12.5px;line-height:1.8}
 
 /* 名古屋の天気（行程ページの先頭、assets/weather.js）。
    行程より先に目に入る位置なので、面積を取らせない: 現在の1行 + 旅の2日を
