@@ -62,6 +62,11 @@
 
     var box = NT.el('div', {}, [head]);
 
+    /* 持ち物より先に入場方法の確認を出す。忘れ物は現地で買い直せるが、
+       整理券・予約は現地では取り返せない（2026-08-12 の失敗）。 */
+    var ec = NT.buildEntryCheck && NT.buildEntryCheck();
+    if (ec) box.appendChild(ec);
+
     NT.packing.forEach(function (g) {
       var cnt = NT.el('span', { class: 'pk-gcount mono',
         text: doneCount(g.items, state) + '/' + g.items.length });

@@ -1,6 +1,6 @@
 /* 一覧は手で並べる。ビルドがないため自動生成しない。
    ファイルを足したら PRECACHE と VERSION の両方を更新すること。 */
-var VERSION = 'nt-v21';
+var VERSION = 'nt-v22';
 var PRECACHE = [
   './',
   'index.html', 'spots.html', 'gourmet.html', 'tips.html', 'play.html', 'goods.html',
@@ -20,6 +20,7 @@ var PRECACHE = [
   'assets/record.js',
   'assets/tipspage.js',
   'assets/changelog.js',
+  'assets/entrycheck.js',
   'assets/goodspage.js',
   'assets/prep.js',
   'assets/omiyage.js',

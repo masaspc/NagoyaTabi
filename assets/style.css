@@ -600,6 +600,21 @@ section.tight{padding-top:0}
 .tips-body-wrap{padding:0 17px 18px;border-top:1px solid var(--rule)}
 .tips-body-wrap>*:first-child{margin-top:15px}
 
+/* 入場方法の事前確認（assets/entrycheck.js）。危険度の高いものほど左の帯を強くして、
+   畳んだ節を開いた瞬間に「未確認が残っている」ことが色で分かるようにする。 */
+.entry-head{margin-bottom:9px}
+.entry-row{margin-bottom:7px;padding:11px 13px;border-left:4px solid var(--rule)}
+.entry-row.sev-1{border-left-color:var(--rokusho-mid)}
+.entry-row.sev-2{border-left-color:var(--kin)}
+.entry-row.sev-3{border-left-color:var(--miso)}
+.entry-line{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.entry-when{font-size:11px;color:var(--gray);flex:none}
+.entry-name{font-size:13.5px;font-weight:700;text-decoration:none}
+.entry-row .where-note{margin-top:5px}
+/* 「やること」= この表の主役。ここだけ色を付けて、読み飛ばされないようにする */
+.entry-act{font-size:12.5px;color:var(--miso);font-weight:500;margin:6px 0 0;line-height:1.7}
+.entry-checked{font-size:10.5px;color:var(--gray);align-self:center}
+
 /* グッズページ（assets/goodspage.js）。店内で片手で使うので、名所・名物と違って
    カードは畳まない。順位の数字を左に大きく置いて、上から順に潰していけるようにする。 */
 .goods{margin-bottom:10px}
