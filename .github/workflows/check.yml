@@ -1,0 +1,41 @@
+# 入場方法の記入もれを push と PR で止める。
+#
+# 2026-08-12 に、営業時間だけ見て組んだせいでポケモンセンターの当日整理券を見落とし、
+# 行程2コマ分（2回訪問 + 徳川美術館の消失）を失った。最初の再発防止は
+# 「出発前に確認する」という人向けのチェック項目だったが、それは弱い。
+# 人は忘れるし、忘れたことに気づけない。だから機械に落とさせる。
+name: check
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  entry:
+    name: 入場方法の記入もれ
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # VERSION の据え置きを見るには比較元の履歴が要る。既定の1コミットだけの
+          # チェックアウトでは origin/main が存在せず、検査が黙って素通りしていた
+          # （実際のCIログで「比較元が見つからないため VERSION の確認は飛ばした」を確認）。
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      # ビルドも依存も無いリポジトリなので、インストールする物は無い
+      - name: データの構文
+        run: |
+          for f in data/*.js assets/*.js sw.js; do
+            node --check "$f"
+          done
+      - name: 入場方法
+        run: node tools/check-entry.mjs
+      - name: Service Worker のキャッシュ一覧
+        env:
+          # 比較元を明示する。PR なら取り込み先の先端、push なら1つ前。
+          # main への push では origin/main が HEAD と同じになり差分が空になるため、
+          # ref 探索まかせにはしない。
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: node tools/check-precache.mjs
